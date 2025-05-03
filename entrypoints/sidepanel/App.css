@@ -81,10 +81,24 @@ body, html {
   border-radius: 4px;
   font-size: 0.8rem;
   cursor: pointer;
+  color: #333;
 }
 
 .toggle-button:hover {
   background-color: #e0e0e0;
+}
+
+/* Dark mode support for the toggle button */
+@media (prefers-color-scheme: dark) {
+  .toggle-button {
+    background-color: #4a4a4a;
+    color: #ffffff;
+    border-color: #666;
+  }
+  
+  .toggle-button:hover {
+    background-color: #5a5a5a;
+  }
 }
 
 /* Notes list styling */
