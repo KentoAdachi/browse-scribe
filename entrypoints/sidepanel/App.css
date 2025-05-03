@@ -1,8 +1,8 @@
 #root {
-  max-width: 1280px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 1rem;
+  text-align: left;
 }
 
 .logo {
@@ -39,4 +39,81 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.note-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 2rem);
+  width: 100%;
+}
+
+.note-container h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.note-editor {
+  flex: 1;
+  width: 100%;
+  min-height: 300px;
+  padding: 1rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: none;
+}
+
+.note-preview {
+  flex: 1;
+  width: 100%;
+  min-height: 300px;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  cursor: text;
+  overflow-y: auto;
+}
+
+.note-preview h1 {
+  font-size: 1.8rem;
+  text-align: left;
+}
+
+.note-preview h2 {
+  font-size: 1.5rem;
+}
+
+.note-preview h3 {
+  font-size: 1.3rem;
+}
+
+.note-preview p {
+  margin: 0.8rem 0;
+}
+
+.note-preview ul, .note-preview ol {
+  margin-left: 1.5rem;
+}
+
+.note-preview code {
+  background-color: #f0f0f0;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.note-preview pre {
+  background-color: #f0f0f0;
+  padding: 0.5rem;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.empty-note {
+  color: #888;
+  text-align: center;
+  margin-top: 2rem;
 }

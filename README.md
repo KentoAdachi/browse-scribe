@@ -1,3 +1,5 @@
-# WXT + React
-
-This template should help get you started developing with React in WXT.
+# 概要
+サイドパネルにメモを保存するためのGoogle Chromeの拡張機能です。
+メモはurlごとに保存され、同じurlを開いたときにサイドパネルに表示されます。
+メモはマークダウン形式で保存され、プレビュー表示が可能です。
+フォーカスがあっている時はプレインテキストで表示され、フォーカスが外れるとプレビュー表示に切り替わります。
