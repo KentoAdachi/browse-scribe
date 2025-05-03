@@ -82,6 +82,13 @@ export function useNotes() {
   // Save note to storage
   const saveNote = async (url: string, content: string): Promise<void> => {
     try {
+      // 空白のノートは保持しない - Don't keep empty notes
+      if (!content.trim()) {
+        // If the content is empty, delete the note instead of saving it
+        await deleteNote(url);
+        return;
+      }
+
       const currentTime = Date.now();
       const noteData: StoredNote = {
         content: content,
@@ -104,6 +111,12 @@ export function useNotes() {
     try {
       await browser.storage.local.remove(url);
       loadAllNotes(); // Refresh the list
+
+      // If this was the current note, reset the state
+      if (note !== "") {
+        setNote("");
+        setLastUpdated(undefined);
+      }
     } catch (error) {
       console.error("Error deleting note:", error);
     }

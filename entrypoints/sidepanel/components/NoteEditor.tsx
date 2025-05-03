@@ -26,7 +26,11 @@ export function NoteEditor({
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setDraft(value);
-    if (!isComposing.current) onNoteChange(value);
+    if (!isComposing.current) {
+      // 空白のノートは保持しない
+      const trimmedValue = value.trim();
+      onNoteChange(trimmedValue || "");
+    }
   };
 
   return (
@@ -44,10 +48,14 @@ export function NoteEditor({
           onCompositionStart={() => (isComposing.current = true)}
           onCompositionEnd={(e) => {
             isComposing.current = false;
-            onNoteChange(e.currentTarget.value); // 確定後に一度だけ送る
+            // 空白のノートは保持しない
+            const trimmedValue = e.currentTarget.value.trim();
+            onNoteChange(trimmedValue || "");
           }}
           onBlur={() => {
-            onNoteChange(draft); // 最終同期
+            // 空白のノートは保持しない
+            const trimmedValue = draft.trim();
+            onNoteChange(trimmedValue || "");
             setIsEditing(false);
           }}
         />
