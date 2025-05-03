@@ -5,6 +5,9 @@ export const getDisplayUrl = (url: string): string => {
   try {
     const urlObj = new URL(url);
     let displayUrl = urlObj.hostname + urlObj.pathname;
+    if (urlObj.search) {
+      displayUrl += "?" + urlObj.search.substring(1);
+    }
     if (displayUrl.length > 40) {
       displayUrl = displayUrl.substring(0, 37) + "...";
     }
