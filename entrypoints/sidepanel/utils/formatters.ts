@@ -25,3 +25,19 @@ export const getNotePreview = (content: string): string => {
   if (content.length <= maxLength) return content;
   return content.substring(0, maxLength) + "...";
 };
+
+/**
+ * Format a timestamp into a readable date string
+ */
+export const formatDate = (timestamp?: number): string => {
+  if (!timestamp) return "No update record";
+
+  const date = new Date(timestamp);
+  return new Intl.DateTimeFormat("ja-JP", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+};

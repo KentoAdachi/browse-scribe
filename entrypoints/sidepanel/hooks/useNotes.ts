@@ -3,10 +3,18 @@ import { useState } from "react";
 export interface NoteItem {
   url: string;
   content: string;
+  lastUpdated?: number; // Timestamp of the last update
+}
+
+// Structure stored in browser.storage.local
+interface StoredNote {
+  content: string;
+  lastUpdated: number;
 }
 
 export function useNotes() {
   const [note, setNote] = useState("");
+  const [lastUpdated, setLastUpdated] = useState<number | undefined>(undefined);
   const [allNotes, setAllNotes] = useState<NoteItem[]>([]);
 
   // Load note from storage based on URL
@@ -14,9 +22,19 @@ export function useNotes() {
     try {
       const data = await browser.storage.local.get(url);
       if (data[url]) {
-        setNote(data[url]);
+        const storedNote = data[url] as StoredNote | string;
+
+        // Handle both old format (string only) and new format (object with content & lastUpdated)
+        if (typeof storedNote === "string") {
+          setNote(storedNote);
+          setLastUpdated(undefined);
+        } else {
+          setNote(storedNote.content);
+          setLastUpdated(storedNote.lastUpdated);
+        }
       } else {
         setNote("");
+        setLastUpdated(undefined);
       }
     } catch (error) {
       console.error("Error loading note:", error);
@@ -30,10 +48,28 @@ export function useNotes() {
       const notes: NoteItem[] = [];
 
       // Convert the object to an array of note items
-      Object.entries(data).forEach(([url, content]) => {
-        // Only include items that have content (and are likely notes)
-        if (typeof content === "string" && content.trim()) {
-          notes.push({ url, content: content as string });
+      Object.entries(data).forEach(([url, stored]) => {
+        if (typeof stored === "string" && stored.trim()) {
+          // Old format: just string content
+          notes.push({
+            url,
+            content: stored,
+            lastUpdated: undefined,
+          });
+        } else if (
+          stored &&
+          typeof stored === "object" &&
+          "content" in stored
+        ) {
+          // New format: object with content & lastUpdated
+          const storedNote = stored as StoredNote;
+          if (storedNote.content.trim()) {
+            notes.push({
+              url,
+              content: storedNote.content,
+              lastUpdated: storedNote.lastUpdated,
+            });
+          }
         }
       });
 
@@ -46,8 +82,16 @@ export function useNotes() {
   // Save note to storage
   const saveNote = async (url: string, content: string): Promise<void> => {
     try {
-      await browser.storage.local.set({ [url]: content });
+      const currentTime = Date.now();
+      const noteData: StoredNote = {
+        content: content,
+        lastUpdated: currentTime,
+      };
+
+      await browser.storage.local.set({ [url]: noteData });
       setNote(content);
+      setLastUpdated(currentTime);
+
       // Refresh the notes list
       loadAllNotes();
     } catch (error) {
@@ -67,6 +111,7 @@ export function useNotes() {
 
   return {
     note,
+    lastUpdated,
     setNote,
     allNotes,
     loadNote,

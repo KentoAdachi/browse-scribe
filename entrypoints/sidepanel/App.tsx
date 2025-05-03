@@ -9,8 +9,15 @@ function App() {
   const [showNotesList, setShowNotesList] = useState(false);
 
   // Initialize notes hook
-  const { note, allNotes, loadNote, loadAllNotes, saveNote, deleteNote } =
-    useNotes();
+  const {
+    note,
+    lastUpdated,
+    allNotes,
+    loadNote,
+    loadAllNotes,
+    saveNote,
+    deleteNote,
+  } = useNotes();
 
   // Handle URL changes with a callback to avoid dependency issues
   const handleUrlChange = useCallback(
@@ -69,7 +76,11 @@ function App() {
           onDeleteNote={handleDeleteNote}
         />
       ) : (
-        <NoteEditor note={note} onNoteChange={handleNoteChange} />
+        <NoteEditor
+          note={note}
+          lastUpdated={lastUpdated}
+          onNoteChange={handleNoteChange}
+        />
       )}
     </div>
   );

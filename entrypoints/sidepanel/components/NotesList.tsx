@@ -1,5 +1,5 @@
 import { NoteItem } from "../hooks/useNotes";
-import { getDisplayUrl, getNotePreview } from "../utils/formatters";
+import { getDisplayUrl, getNotePreview, formatDate } from "../utils/formatters";
 
 interface NotesListProps {
   notes: NoteItem[];
@@ -29,6 +29,9 @@ export function NotesList({
                 <div className="note-item-url">{getDisplayUrl(item.url)}</div>
                 <div className="note-item-preview">
                   {getNotePreview(item.content)}
+                </div>
+                <div className="note-item-date">
+                  {formatDate(item.lastUpdated)}
                 </div>
               </div>
               <button
