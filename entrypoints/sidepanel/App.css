@@ -1,8 +1,18 @@
 #root {
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
-  padding: 1rem;
+  margin: 0;
+  padding: 0.5rem;
+  box-sizing: border-box;
   text-align: left;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
 }
 
 .logo {
@@ -44,13 +54,15 @@
 .note-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 2rem);
+  height: calc(100vh - 1rem);
   width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .note-container h1 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
   text-align: center;
 }
 
@@ -58,51 +70,70 @@
   flex: 1;
   width: 100%;
   min-height: 300px;
-  padding: 1rem;
-  font-size: 1rem;
+  padding: 0.75rem;
+  font-size: 0.9rem;
   line-height: 1.5;
   border: 1px solid #ccc;
   border-radius: 4px;
   resize: none;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .note-preview {
   flex: 1;
   width: 100%;
   min-height: 300px;
-  padding: 1rem;
+  padding: 0.75rem;
   border: 1px solid #eee;
   border-radius: 4px;
   cursor: text;
   overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .note-preview h1 {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   text-align: left;
+  margin: 0.75rem 0;
 }
 
 .note-preview h2 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
+  margin: 0.75rem 0;
 }
 
 .note-preview h3 {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
 }
 
 .note-preview p {
-  margin: 0.8rem 0;
+  margin: 0.5rem 0;
+  max-width: 100%;
+}
+
+.note-preview img {
+  max-width: 100%;
+  height: auto;
 }
 
 .note-preview ul, .note-preview ol {
-  margin-left: 1.5rem;
+  margin-left: 1rem;
+  padding-left: 0.5rem;
 }
 
 .note-preview code {
   background-color: #f0f0f0;
-  padding: 0.1rem 0.3rem;
+  padding: 0.1rem 0.2rem;
   border-radius: 3px;
   font-family: monospace;
+  font-size: 0.85rem;
+  word-break: break-all;
 }
 
 .note-preview pre {
@@ -110,6 +141,25 @@
   padding: 0.5rem;
   border-radius: 4px;
   overflow-x: auto;
+  max-width: 100%;
+  white-space: pre-wrap;
+}
+
+.note-preview blockquote {
+  margin: 0.5rem 0;
+  padding-left: 0.5rem;
+  border-left: 3px solid #ccc;
+}
+
+.note-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.note-preview table, .note-preview th, .note-preview td {
+  border: 1px solid #ddd;
+  padding: 0.25rem;
 }
 
 .empty-note {
