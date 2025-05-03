@@ -23,7 +23,14 @@ function App() {
     getCurrentTab();
 
     // Listen for tab updates to refresh notes when URL changes
-    const handleTabUpdate = async (tabId, changeInfo) => {
+    interface TabChangeInfo {
+      url?: string;
+    }
+
+    const handleTabUpdate = async (
+      tabId: number,
+      changeInfo: TabChangeInfo
+    ): Promise<void> => {
       if (changeInfo.url) {
         const tabs = await browser.tabs.query({
           active: true,
@@ -43,9 +50,13 @@ function App() {
   }, []);
 
   // Load note from storage based on URL
-  const loadNote = async (url) => {
+  interface StoredNotes {
+    [key: string]: string;
+  }
+
+  const loadNote = async (url: string): Promise<void> => {
     try {
-      const data = await browser.storage.local.get(url);
+      const data: StoredNotes = await browser.storage.local.get(url);
       if (data[url]) {
         setNote(data[url]);
       } else {
@@ -57,7 +68,7 @@ function App() {
   };
 
   // Save note to storage
-  const saveNote = async (content) => {
+  const saveNote = async (content: string): Promise<void> => {
     try {
       await browser.storage.local.set({ [currentUrl]: content });
     } catch (error) {
@@ -66,8 +77,10 @@ function App() {
   };
 
   // Handle note changes
-  const handleNoteChange = (e) => {
-    const newContent = e.target.value;
+  const handleNoteChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ): void => {
+    const newContent: string = e.target.value;
     setNote(newContent);
     saveNote(newContent);
   };
