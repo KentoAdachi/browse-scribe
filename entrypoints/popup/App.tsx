@@ -66,7 +66,7 @@ function App() {
   return (
     <div className="note-container popup-container">
       <div className="header">
-        <h1>{currentTitle}</h1>
+        <h1>{title || "BrowseScribe"}</h1>
         <button onClick={toggleView} className="toggle-button">
           {showNotesList ? "Current Note" : "All Notes"}
         </button>

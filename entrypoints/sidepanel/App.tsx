@@ -64,7 +64,7 @@ function App() {
   return (
     <div className="note-container">
       <div className="header">
-        <h1>{currentTitle || "No Page Title"}</h1>
+        <h1>{title || "BrowseScribe"}</h1>
         <button onClick={toggleView} className="toggle-button">
           {showNotesList ? "Current Note" : "All Notes"}
         </button>
