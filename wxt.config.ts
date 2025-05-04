@@ -3,6 +3,9 @@ import { defineConfig } from "wxt";
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
+  runner: {
+    startUrls: ["https://google.com/"],
+  },
   manifest: {
     name: "WebNote",
     description: "Save markdown notes per URL in your browser's side panel",
