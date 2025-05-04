@@ -12,10 +12,6 @@ export default defineConfig({
       default_path: "sidepanel/index.html",
     },
     commands: {
-      open_popup: {
-        suggested_key: { default: "Ctrl+Shift+P" },
-        description: "Open extension popup",
-      },
       open_side_panel: {
         suggested_key: { default: "Ctrl+Shift+O" },
         description: "Open side panel",

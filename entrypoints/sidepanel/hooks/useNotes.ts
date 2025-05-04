@@ -42,6 +42,14 @@ export function useNotes() {
         setTitle("");
         setLastUpdated(undefined);
       }
+
+      // sidepanel.ts (React でも同様にどこかで一度だけ実行)
+      browser.runtime.onMessage.addListener((msg) => {
+        if (msg.type === "toggle-request") {
+          // ★タブ ID を気にしないならそのまま閉じる
+          window.close(); // ← 公式でも推奨されているやり方 :contentReference[oaicite:0]{index=0}
+        }
+      });
     } catch (error) {
       console.error("Error loading note:", error);
     }
