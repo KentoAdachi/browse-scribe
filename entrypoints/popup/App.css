@@ -229,33 +229,33 @@ body, html {
   }
 }
 
-/* Search functionality styles */
+/* Search functionality styles - optimized for both popup and sidebar */
 .search-container {
   position: relative;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   width: 100%;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.5rem;
-  padding-right: 2rem;
+  padding: 0.35rem 1.75rem 0.35rem 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   box-sizing: border-box;
+  height: 28px;
 }
 
 .clear-search-button {
   position: absolute;
-  right: 0.5rem;
+  right: 0.4rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
   color: #666;
-  font-size: 1rem;
+  font-size: 0.9rem;
   line-height: 1;
   padding: 0;
   margin: 0;
@@ -263,23 +263,6 @@ body, html {
 
 .clear-search-button:hover {
   color: #333;
-}
-
-/* Popup-specific search styles */
-.popup-search-container {
-  margin-bottom: 0.5rem;
-}
-
-.popup-search-input {
-  padding: 0.35rem;
-  padding-right: 1.75rem;
-  font-size: 0.8rem;
-  height: 28px;
-}
-
-.popup-clear-search-button {
-  right: 0.35rem;
-  font-size: 0.9rem;
 }
 
 @media (prefers-color-scheme: dark) {
