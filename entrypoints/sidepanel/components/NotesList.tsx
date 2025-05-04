@@ -1,6 +1,6 @@
 import { NoteItem } from "../hooks/useNotes";
 import { getDisplayUrl, getNotePreview, formatDate } from "../utils/formatters";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface NotesListProps {
   notes: NoteItem[];
@@ -14,6 +14,14 @@ export function NotesList({
   onDeleteNote,
 }: NotesListProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  // Detect if we're in popup mode by checking for the popup-container class
+  const [isPopup, setIsPopup] = useState(false);
+
+  useEffect(() => {
+    // Check if this component is being rendered within a popup container
+    const container = document.querySelector(".popup-container");
+    setIsPopup(!!container);
+  }, []);
 
   // Filter notes based on search query (content, URL, or date)
   const filteredNotes =
@@ -38,17 +46,23 @@ export function NotesList({
     <div className="notes-list">
       <h2>All Notes ({notes.length})</h2>
 
-      <div className="search-container">
+      <div
+        className={`search-container ${
+          isPopup ? "popup-search-container" : ""
+        }`}
+      >
         <input
           type="text"
-          className="search-input"
+          className={`search-input ${isPopup ? "popup-search-input" : ""}`}
           placeholder="検索: メモ内容、URL、更新日..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         {searchQuery && (
           <button
-            className="clear-search-button"
+            className={`clear-search-button ${
+              isPopup ? "popup-clear-search-button" : ""
+            }`}
             onClick={() => setSearchQuery("")}
             title="検索をクリア"
           >
