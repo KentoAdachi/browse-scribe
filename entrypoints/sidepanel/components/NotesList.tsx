@@ -16,23 +16,26 @@ export function NotesList({
   const [searchQuery, setSearchQuery] = useState("");
 
   // Filter notes based on search query (content, URL, or date)
+  // Then sort by lastUpdated date (newest first)
   const filteredNotes =
     searchQuery.trim() === ""
-      ? notes
-      : notes.filter((note) => {
-          const query = searchQuery.toLowerCase();
-          // Search in content
-          if (note.content.toLowerCase().includes(query)) return true;
-          // Search in URL
-          if (note.url.toLowerCase().includes(query)) return true;
-          // Search in title
-          if (note.title?.toLowerCase().includes(query)) return true;
-          // Search in formatted date
-          const formattedDate = formatDate(note.lastUpdated).toLowerCase();
-          if (formattedDate.includes(query)) return true;
+      ? [...notes].sort((a, b) => (b.lastUpdated ?? 0) - (a.lastUpdated ?? 0))
+      : notes
+          .filter((note) => {
+            const query = searchQuery.toLowerCase();
+            // Search in content
+            if (note.content.toLowerCase().includes(query)) return true;
+            // Search in URL
+            if (note.url.toLowerCase().includes(query)) return true;
+            // Search in title
+            if (note.title?.toLowerCase().includes(query)) return true;
+            // Search in formatted date
+            const formattedDate = formatDate(note.lastUpdated).toLowerCase();
+            if (formattedDate.includes(query)) return true;
 
-          return false;
-        });
+            return false;
+          })
+          .sort((a, b) => (b.lastUpdated ?? 0) - (a.lastUpdated ?? 0));
 
   return (
     <div className="notes-list">
