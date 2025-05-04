@@ -13,7 +13,7 @@ export default defineConfig({
     },
     commands: {
       open_side_panel: {
-        suggested_key: { default: "Ctrl+Shift+O" },
+        suggested_key: { default: "Alt+M" },
         description: "Open side panel",
       },
     },
