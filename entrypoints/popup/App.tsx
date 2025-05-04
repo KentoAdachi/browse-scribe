@@ -1,3 +1,4 @@
+// App.tsx
 import { useState, useCallback } from "react";
 import "./App.css";
 import { useNotes } from "../sidepanel/hooks/useNotes";
@@ -7,8 +8,9 @@ import { NotesList } from "../sidepanel/components/NotesList";
 
 function App() {
   const [showNotesList, setShowNotesList] = useState(false);
+  const autoEdit = true; // ← いつでも編集モードで開く
 
-  // Initialize notes hook
+  // --- notes フック初期化 ---
   const {
     note,
     title,
@@ -20,7 +22,7 @@ function App() {
     deleteNote,
   } = useNotes();
 
-  // Handle URL changes with a callback to avoid dependency issues
+  // --- URL 変化時のハンドラ ---
   const handleUrlChange = useCallback(
     (url: string, pageTitle: string) => {
       loadNote(url);
@@ -28,36 +30,36 @@ function App() {
     [loadNote]
   );
 
-  // Initialize tabs hook with URL change callback
+  // --- tabs フック初期化 ---
   const { currentUrl, currentTitle, navigateToUrl } = useTabs(handleUrlChange);
 
-  // Handle note changes
+  // --- ノート変更時の保存 ---
   const handleNoteChange = (content: string): void => {
     saveNote(currentUrl, content, currentTitle);
   };
 
-  // Navigate to a URL and show its note
+  // --- ノート一覧で項目クリック → その URL へ遷移 ---
   const handleNoteClick = (url: string) => {
     navigateToUrl(url);
-    setShowNotesList(false); // Switch back to note view
+    setShowNotesList(false); // 一覧からノートビューに戻る
   };
 
-  // Delete a note
+  // --- ノート削除 ---
   const handleDeleteNote = async (url: string, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent triggering the navigateToNote
+    event.stopPropagation(); // navigateToUrl を抑止
     await deleteNote(url);
 
-    // If the deleted note is the current one, clear the current display
+    // 表示中のノートを削除した場合は再読込して空にする
     if (url === currentUrl) {
       loadNote(currentUrl);
     }
   };
 
-  // Toggle between current note view and notes list
+  // --- ノートビュー ⇆ 一覧ビュー 切り替え ---
   const toggleView = () => {
     setShowNotesList(!showNotesList);
     if (!showNotesList) {
-      loadAllNotes(); // Refresh the notes list when showing it
+      loadAllNotes(); // 一覧表示時に最新化
     }
   };
 
@@ -77,13 +79,12 @@ function App() {
           onDeleteNote={handleDeleteNote}
         />
       ) : (
-        <>
-          <NoteEditor
-            note={note}
-            lastUpdated={lastUpdated}
-            onNoteChange={handleNoteChange}
-          />
-        </>
+        <NoteEditor
+          note={note}
+          lastUpdated={lastUpdated}
+          onNoteChange={handleNoteChange}
+          autoEdit={autoEdit}
+        />
       )}
     </div>
   );
