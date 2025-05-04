@@ -1,5 +1,6 @@
 import { NoteItem } from "../hooks/useNotes";
 import { getDisplayUrl, getNotePreview, formatDate } from "../utils/formatters";
+import { useState } from "react";
 
 interface NotesListProps {
   notes: NoteItem[];
@@ -12,14 +13,59 @@ export function NotesList({
   onNoteClick,
   onDeleteNote,
 }: NotesListProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter notes based on search query (content, URL, or date)
+  const filteredNotes =
+    searchQuery.trim() === ""
+      ? notes
+      : notes.filter((note) => {
+          const query = searchQuery.toLowerCase();
+          // Search in content
+          if (note.content.toLowerCase().includes(query)) return true;
+          // Search in URL
+          if (note.url.toLowerCase().includes(query)) return true;
+          // Search in title
+          if (note.title?.toLowerCase().includes(query)) return true;
+          // Search in formatted date
+          const formattedDate = formatDate(note.lastUpdated).toLowerCase();
+          if (formattedDate.includes(query)) return true;
+
+          return false;
+        });
+
   return (
     <div className="notes-list">
       <h2>All Notes ({notes.length})</h2>
-      {notes.length === 0 ? (
-        <p className="empty-notes">No notes have been created yet.</p>
+
+      <div className="search-container">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="検索: メモ内容、URL、更新日..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {searchQuery && (
+          <button
+            className="clear-search-button"
+            onClick={() => setSearchQuery("")}
+            title="検索をクリア"
+          >
+            ×
+          </button>
+        )}
+      </div>
+
+      {filteredNotes.length === 0 ? (
+        searchQuery ? (
+          <p className="empty-notes">検索条件に一致するメモはありません。</p>
+        ) : (
+          <p className="empty-notes">No notes have been created yet.</p>
+        )
       ) : (
         <ul>
-          {notes.map((item, index) => (
+          {filteredNotes.map((item, index) => (
             <li
               key={index}
               className="note-item"

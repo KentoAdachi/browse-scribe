@@ -338,3 +338,55 @@ body, html {
     color: #e0e0e0;
   }
 }
+
+/* Search functionality styles */
+.search-container {
+  position: relative;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem;
+  padding-right: 2rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.clear-search-button {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+}
+
+.clear-search-button:hover {
+  color: #333;
+}
+
+@media (prefers-color-scheme: dark) {
+  .search-input {
+    background-color: #333;
+    color: #fff;
+    border-color: #555;
+  }
+  
+  .clear-search-button {
+    color: #aaa;
+  }
+  
+  .clear-search-button:hover {
+    color: #fff;
+  }
+}
