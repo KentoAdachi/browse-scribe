@@ -1,8 +1,4 @@
 export default defineBackground(() => {
-  console.log("WebNote background script is running");
-
-  // browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
-
   browser.commands.onCommand.addListener(async (command, tab) => {
     console.log(`Command received: ${command}`);
 
