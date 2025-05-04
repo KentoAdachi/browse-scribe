@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 
-export function useTabs(onUrlChange: (url: string) => void) {
+export function useTabs(onUrlChange: (url: string, title: string) => void) {
   const [currentUrl, setCurrentUrl] = useState("");
+  const [currentTitle, setCurrentTitle] = useState("");
 
   useEffect(() => {
     const getCurrentTab = async () => {
@@ -11,7 +12,8 @@ export function useTabs(onUrlChange: (url: string) => void) {
       });
       if (tabs[0]?.url) {
         setCurrentUrl(tabs[0].url);
-        onUrlChange(tabs[0].url);
+        setCurrentTitle(tabs[0].title || "");
+        onUrlChange(tabs[0].url, tabs[0].title || "");
       }
     };
 
@@ -20,16 +22,20 @@ export function useTabs(onUrlChange: (url: string) => void) {
     // Listen for tab updates to refresh notes when URL changes
     const handleTabUpdate = async (
       tabId: number,
-      changeInfo: { url?: string }
+      changeInfo: { url?: string; title?: string }
     ) => {
-      if (changeInfo.url) {
+      if (changeInfo.url || changeInfo.title) {
         const tabs = await browser.tabs.query({
           active: true,
           currentWindow: true,
         });
         if (tabs[0]?.id === tabId) {
-          setCurrentUrl(changeInfo.url);
-          onUrlChange(changeInfo.url);
+          const newUrl = changeInfo.url || currentUrl;
+          const newTitle = tabs[0].title || "";
+
+          setCurrentUrl(newUrl);
+          setCurrentTitle(newTitle);
+          onUrlChange(newUrl, newTitle);
         }
       }
     };
@@ -38,7 +44,7 @@ export function useTabs(onUrlChange: (url: string) => void) {
     return () => {
       browser.tabs.onUpdated.removeListener(handleTabUpdate);
     };
-  }, [onUrlChange]);
+  }, [onUrlChange, currentUrl]);
 
   // Navigate to a URL
   const navigateToUrl = async (url: string) => {
@@ -51,7 +57,7 @@ export function useTabs(onUrlChange: (url: string) => void) {
       if (tabs[0]?.id) {
         await browser.tabs.update(tabs[0].id, { url });
         setCurrentUrl(url);
-        onUrlChange(url);
+        // After navigation, we need to wait for the page to load to get the title
       }
     } catch (error) {
       console.error("Error navigating to URL:", error);
@@ -60,6 +66,7 @@ export function useTabs(onUrlChange: (url: string) => void) {
 
   return {
     currentUrl,
+    currentTitle,
     navigateToUrl,
   };
 }

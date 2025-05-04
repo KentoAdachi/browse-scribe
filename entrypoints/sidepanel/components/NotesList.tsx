@@ -26,6 +26,9 @@ export function NotesList({
               onClick={() => onNoteClick(item.url)}
             >
               <div className="note-item-content">
+                {item.title && (
+                  <div className="note-item-title">{item.title}</div>
+                )}
                 <div className="note-item-url">{getDisplayUrl(item.url)}</div>
                 <div className="note-item-preview">
                   {getNotePreview(item.content)}

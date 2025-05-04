@@ -2,18 +2,21 @@ import { useState } from "react";
 
 export interface NoteItem {
   url: string;
+  title: string; // Page title
   content: string;
   lastUpdated?: number; // Timestamp of the last update
 }
 
 // Structure stored in browser.storage.local
 interface StoredNote {
+  title: string; // Page title
   content: string;
   lastUpdated: number;
 }
 
 export function useNotes() {
   const [note, setNote] = useState("");
+  const [title, setTitle] = useState(""); // Add state for title
   const [lastUpdated, setLastUpdated] = useState<number | undefined>(undefined);
   const [allNotes, setAllNotes] = useState<NoteItem[]>([]);
 
@@ -27,13 +30,16 @@ export function useNotes() {
         // Handle both old format (string only) and new format (object with content & lastUpdated)
         if (typeof storedNote === "string") {
           setNote(storedNote);
+          setTitle(""); // No title in old format
           setLastUpdated(undefined);
         } else {
           setNote(storedNote.content);
+          setTitle(storedNote.title || ""); // Get title from storage
           setLastUpdated(storedNote.lastUpdated);
         }
       } else {
         setNote("");
+        setTitle("");
         setLastUpdated(undefined);
       }
     } catch (error) {
@@ -53,6 +59,7 @@ export function useNotes() {
           // Old format: just string content
           notes.push({
             url,
+            title: "", // No title in old format
             content: stored,
             lastUpdated: undefined,
           });
@@ -66,6 +73,7 @@ export function useNotes() {
           if (storedNote.content.trim()) {
             notes.push({
               url,
+              title: storedNote.title || "", // Get title from storage
               content: storedNote.content,
               lastUpdated: storedNote.lastUpdated,
             });
@@ -80,7 +88,11 @@ export function useNotes() {
   };
 
   // Save note to storage
-  const saveNote = async (url: string, content: string): Promise<void> => {
+  const saveNote = async (
+    url: string,
+    content: string,
+    pageTitle: string
+  ): Promise<void> => {
     try {
       // 空白のノートは保持しない - Don't keep empty notes
       if (!content.trim()) {
@@ -91,12 +103,14 @@ export function useNotes() {
 
       const currentTime = Date.now();
       const noteData: StoredNote = {
+        title: pageTitle,
         content: content,
         lastUpdated: currentTime,
       };
 
       await browser.storage.local.set({ [url]: noteData });
       setNote(content);
+      setTitle(pageTitle);
       setLastUpdated(currentTime);
 
       // Refresh the notes list
@@ -115,6 +129,7 @@ export function useNotes() {
       // If this was the current note, reset the state
       if (note !== "") {
         setNote("");
+        setTitle(""); // Reset title
         setLastUpdated(undefined);
       }
     } catch (error) {
@@ -124,6 +139,7 @@ export function useNotes() {
 
   return {
     note,
+    title, // Expose title state
     lastUpdated,
     setNote,
     allNotes,

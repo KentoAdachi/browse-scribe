@@ -303,3 +303,38 @@ body, html {
   margin-top: 0.25rem;
   font-style: italic;
 }
+
+.page-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-color-scheme: dark) {
+  .page-title {
+    color: #e0e0e0;
+    border-bottom-color: #444;
+  }
+}
+
+.note-item-title {
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-color-scheme: dark) {
+  .note-item-title {
+    color: #e0e0e0;
+  }
+}

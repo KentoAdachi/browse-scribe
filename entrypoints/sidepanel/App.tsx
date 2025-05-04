@@ -11,6 +11,7 @@ function App() {
   // Initialize notes hook
   const {
     note,
+    title, // Adding title from useNotes hook
     lastUpdated,
     allNotes,
     loadNote,
@@ -21,18 +22,18 @@ function App() {
 
   // Handle URL changes with a callback to avoid dependency issues
   const handleUrlChange = useCallback(
-    (url: string) => {
+    (url: string, pageTitle: string) => {
       loadNote(url);
     },
     [loadNote]
   );
 
   // Initialize tabs hook with URL change callback
-  const { currentUrl, navigateToUrl } = useTabs(handleUrlChange);
+  const { currentUrl, currentTitle, navigateToUrl } = useTabs(handleUrlChange);
 
   // Handle note changes
   const handleNoteChange = (content: string): void => {
-    saveNote(currentUrl, content);
+    saveNote(currentUrl, content, currentTitle);
   };
 
   // Navigate to a URL and show its note
@@ -76,11 +77,13 @@ function App() {
           onDeleteNote={handleDeleteNote}
         />
       ) : (
-        <NoteEditor
-          note={note}
-          lastUpdated={lastUpdated}
-          onNoteChange={handleNoteChange}
-        />
+        <>
+          <NoteEditor
+            note={note}
+            lastUpdated={lastUpdated}
+            onNoteChange={handleNoteChange}
+          />
+        </>
       )}
     </div>
   );
