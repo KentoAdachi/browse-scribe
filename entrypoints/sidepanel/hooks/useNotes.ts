@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export interface NoteItem {
   url: string;
@@ -19,6 +19,22 @@ export function useNotes() {
   const [title, setTitle] = useState(""); // Add state for title
   const [lastUpdated, setLastUpdated] = useState<number | undefined>(undefined);
   const [allNotes, setAllNotes] = useState<NoteItem[]>([]);
+
+  // Set up message listener for toggle-request
+  useEffect(() => {
+    const messageListener = (msg: any) => {
+      if (msg.type === "toggle-request") {
+        window.close();
+      }
+    };
+
+    browser.runtime.onMessage.addListener(messageListener);
+
+    // Clean up listener when component unmounts
+    return () => {
+      browser.runtime.onMessage.removeListener(messageListener);
+    };
+  }, []);
 
   // Load note from storage based on URL
   const loadNote = async (url: string): Promise<void> => {
@@ -42,14 +58,6 @@ export function useNotes() {
         setTitle("");
         setLastUpdated(undefined);
       }
-
-      // sidepanel.ts (React でも同様にどこかで一度だけ実行)
-      browser.runtime.onMessage.addListener((msg) => {
-        if (msg.type === "toggle-request") {
-          // ★タブ ID を気にしないならそのまま閉じる
-          window.close(); // ← 公式でも推奨されているやり方 :contentReference[oaicite:0]{index=0}
-        }
-      });
     } catch (error) {
       console.error("Error loading note:", error);
     }
