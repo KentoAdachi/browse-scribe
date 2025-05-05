@@ -4,7 +4,7 @@ import { defineConfig } from "wxt";
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
   runner: {
-    startUrls: ["https://google.com/"],
+    startUrls: ["https://www.youtube.com/shorts/O7nNwkPwu1E/"],
   },
   manifest: {
     name: "BrowseScribe",
