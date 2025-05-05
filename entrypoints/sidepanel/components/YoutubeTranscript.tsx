@@ -68,7 +68,7 @@ export function YoutubeTranscript({
           {
             role: "system",
             content:
-              "あなたは要約の専門家です。以下のテキストを簡潔に要約してください。要約にはマークダウン形式を使用してください。",
+              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書きで要約してください。",
           },
           {
             role: "user",
