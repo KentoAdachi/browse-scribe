@@ -122,7 +122,7 @@ export function YoutubeTranscript({
             className="toggle-transcript-button"
             aria-expanded={isExpanded}
           >
-            {isExpanded ? "折りたたむ" : "展開する"}
+            {isExpanded ? "折畳" : "展開"}
           </button>
         </div>
         <button
