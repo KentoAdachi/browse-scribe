@@ -8,7 +8,7 @@ import { NotesList } from "../sidepanel/components/NotesList";
 
 function App() {
   const [showNotesList, setShowNotesList] = useState(false);
-  const autoEdit = true; // ← いつでも編集モードで開く
+  const [autoEdit, setAutoEdit] = useState(false);
 
   // --- notes フック初期化 ---
   const {
@@ -29,6 +29,14 @@ function App() {
     },
     [loadNote]
   );
+
+  // note がロードされてきたら次のフレームで自動編集開始
+  useEffect(() => {
+    if (!autoEdit) {
+      // requestAnimationFrame で 1 フレーム遅延させるとチラつきも最小
+      requestAnimationFrame(() => setAutoEdit(true));
+    }
+  }, [note]); // note が変わったら再評価
 
   // --- tabs フック初期化 ---
   const { currentUrl, currentTitle, navigateToUrl } = useTabs(handleUrlChange);
