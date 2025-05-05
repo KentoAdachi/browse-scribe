@@ -12,7 +12,10 @@ interface TranscriptItem {
   duration: number;
 }
 
-export function YoutubeTranscript({ url, onAddToNote }: YoutubeTranscriptProps) {
+export function YoutubeTranscript({
+  url,
+  onAddToNote,
+}: YoutubeTranscriptProps) {
   const [transcript, setTranscript] = useState<TranscriptItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +28,9 @@ export function YoutubeTranscript({ url, onAddToNote }: YoutubeTranscriptProps) 
         const result = await fetchTranscript(url);
         setTranscript(result);
       } catch (err) {
-        setError("Failed to load transcript. This video may not have captions available.");
+        setError(
+          "Failed to load transcript. This video may not have captions available."
+        );
         console.error("Error fetching transcript:", err);
       } finally {
         setIsLoading(false);
@@ -38,7 +43,7 @@ export function YoutubeTranscript({ url, onAddToNote }: YoutubeTranscriptProps) 
   }, [url]);
 
   const formatTranscript = (): string => {
-    return transcript.map(item => item.text).join(" ");
+    return transcript.map((item) => item.text).join(" ");
   };
 
   const handleAddToNote = () => {
