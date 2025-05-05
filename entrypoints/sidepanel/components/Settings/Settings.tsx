@@ -1,13 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useApiSettings } from "../../hooks/useApiSettings";
 import "./Settings.css";
-
-const AVAILABLE_MODELS = [
-  "gpt-4.1-nano",
-  "gpt-4.0",
-  "gpt-3.5-turbo",
-  "gpt-4.1-turbo",
-];
+import OpenAI from "openai";
 
 export function Settings() {
   const {
@@ -20,7 +14,41 @@ export function Settings() {
     saveMessage,
   } = useApiSettings();
 
+  const [availableModels, setAvailableModels] = useState<string[]>([]);
+  const [isLoadingModels, setIsLoadingModels] = useState(false);
+  const [modelLoadError, setModelLoadError] = useState<string | null>(null);
   const [showApiKey, setShowApiKey] = useState(false);
+
+  // Fetch models from OpenAI API when apiKey changes
+  useEffect(() => {
+    const fetchModels = async () => {
+      if (!apiKey) {
+        setAvailableModels([]); // Clear models if no API key
+        return;
+      }
+
+      try {
+        setIsLoadingModels(true);
+        setModelLoadError(null);
+
+        const openai = new OpenAI({
+          apiKey: apiKey,
+          dangerouslyAllowBrowser: true, // Allow usage in browser environment
+        });
+
+        const response = await openai.models.list();
+        const models = response.data.map((model) => model.id);
+        setAvailableModels(models);
+      } catch (error) {
+        console.error("Error fetching models:", error);
+        setModelLoadError("Failed to load models. Please check your API key.");
+      } finally {
+        setIsLoadingModels(false);
+      }
+    };
+
+    fetchModels();
+  }, [apiKey]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,13 +85,25 @@ export function Settings() {
             id="model"
             value={model}
             onChange={(e) => setModel(e.target.value)}
+            disabled={isLoadingModels || !apiKey}
           >
-            {AVAILABLE_MODELS.map((modelOption) => (
-              <option key={modelOption} value={modelOption}>
-                {modelOption}
+            {isLoadingModels ? (
+              <option value="">Loading models...</option>
+            ) : availableModels.length > 0 ? (
+              availableModels.map((modelOption) => (
+                <option key={modelOption} value={modelOption}>
+                  {modelOption}
+                </option>
+              ))
+            ) : (
+              <option value="">
+                {apiKey ? "No models found" : "Enter API key to load models"}
               </option>
-            ))}
+            )}
           </select>
+          {modelLoadError && (
+            <div className="error-message">{modelLoadError}</div>
+          )}
         </div>
 
         <button type="submit" className="save-button" disabled={isSaving}>
