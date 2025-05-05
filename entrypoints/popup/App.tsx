@@ -1,5 +1,5 @@
 // App.tsx
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import "./App.css";
 import { useNotes } from "../sidepanel/hooks/useNotes";
 import { useTabs } from "../sidepanel/hooks/useTabs";
@@ -30,11 +30,12 @@ function App() {
     [loadNote]
   );
 
+  const isFirstRender = useRef(true); // 初回レンダリングかどうか
   // note がロードされてきたら次のフレームで自動編集開始
   useEffect(() => {
     if (!autoEdit) {
-      // requestAnimationFrame で 1 フレーム遅延させるとチラつきも最小
-      requestAnimationFrame(() => setAutoEdit(true));
+      // 50 ms 遅延させてチラつきを抑える
+      setTimeout(() => setAutoEdit(true), 50);
     }
   }, [note]); // note が変わったら再評価
 
