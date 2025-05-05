@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-
 /**
  * Track the current active tab’s URL & title and expose helpers.
  * The hook now responds both to URL updates inside the active tab
@@ -51,9 +50,7 @@ export function useTabs(onUrlChange: (url: string, title: string) => void) {
     };
 
     // --- when the user switches to a different tab ---
-    const handleTabActivated = async (
-      activeInfo: browser.tabs.OnActivatedActiveInfo
-    ) => {
+    const handleTabActivated = async (activeInfo: any) => {
       try {
         const tab = await browser.tabs.get(activeInfo.tabId);
         if (tab.url) {
