@@ -402,68 +402,149 @@ body, html {
   }
 }
 
-/* YouTube Transcript Styles */
+/* YouTube Transcript Component Styles */
 .youtube-transcript {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  padding: 12px;
-  font-size: 14px;
-  color:#333;
+  margin-bottom: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .transcript-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  padding: 0.5rem 1rem;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.transcript-header h3 {
+.transcript-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.transcript-title h3 {
   margin: 0;
-  font-size: 16px;
-  color: #cc0000; /* YouTube red color */
-}
-
-.add-transcript-button {
-  background-color: #cc0000;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.add-transcript-button:hover {
-  background-color: #a00000;
+  font-size: 1rem;
 }
 
 .transcript-content {
-  max-height: 200px;
+  padding: 0.5rem 1rem;
+  transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
   overflow-y: auto;
-  line-height: 1.4;
-  padding: 8px;
-  background-color: white;
-  border-radius: 4px;
+}
+
+.transcript-content.collapsed {
+  max-height: 50px;
+  overflow: hidden;
+  opacity: 0.8;
+}
+
+.transcript-content.expanded {
+  max-height: 300px;
 }
 
 .transcript-item {
-  display: inline;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
-.transcript-loading {
-  padding: 20px;
+.toggle-transcript-button {
+  padding: 0.25rem 0.5rem;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.toggle-transcript-button:hover {
+  background-color: #e0e0e0;
+}
+
+.add-transcript-button {
+  padding: 0.25rem 0.5rem;
+  background-color: #4a8fee;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.add-transcript-button:hover:not(:disabled) {
+  background-color: #3a7fde;
+}
+
+.add-transcript-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.transcript-loading, .transcript-error {
+  padding: 1rem;
   text-align: center;
   color: #666;
 }
 
 .transcript-error {
-  padding: 16px;
-  color: #cc0000;
-  background-color: #fff0f0;
-  border-left: 4px solid #cc0000;
-  margin-bottom: 16px;
+  color: #d32f2f;
+}
+
+/* Dark mode support for transcript component */
+@media (prefers-color-scheme: dark) {
+  .youtube-transcript {
+    border-color: #444;
+  }
+  
+  .transcript-header {
+    background-color: #333;
+    border-bottom-color: #444;
+  }
+  
+  .transcript-title h3 {
+    color: #e0e0e0;
+  }
+  
+  .toggle-transcript-button {
+    background-color: #4a4a4a;
+    color: #e0e0e0;
+    border-color: #666;
+  }
+  
+  .toggle-transcript-button:hover {
+    background-color: #5a5a5a;
+  }
+  
+  .add-transcript-button {
+    background-color: #4a8fee;
+  }
+  
+  .add-transcript-button:hover:not(:disabled) {
+    background-color: #3a7fde;
+  }
+  
+  .add-transcript-button:disabled {
+    background-color: #555;
+  }
+  
+  .transcript-loading {
+    color: #aaa;
+  }
+  
+  .transcript-error {
+    color: #ff6b6b;
+  }
+  
+  .transcript-item {
+    color: #e0e0e0;
+  }
+  
+  .transcript-content.collapsed {
+    opacity: 0.7;
+  }
 }

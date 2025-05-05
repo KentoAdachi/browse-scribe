@@ -22,6 +22,7 @@ export function YoutubeTranscript({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const { apiKey, model } = useApiSettings();
 
   // Initialize OpenAI client with API key from settings
@@ -68,7 +69,7 @@ export function YoutubeTranscript({
           {
             role: "system",
             content:
-              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。各トピックは見出し3（###）で始めてください。",
+              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。最初に動画全体の概要を簡潔に説明後、各トピックは見出し3（###）で始めてください。",
           },
           {
             role: "user",
@@ -114,7 +115,16 @@ export function YoutubeTranscript({
   return (
     <div className="youtube-transcript">
       <div className="transcript-header">
-        <h3>YouTube Transcript</h3>
+        <div className="transcript-title">
+          <h3>YouTube Transcript</h3>
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="toggle-transcript-button"
+            aria-expanded={isExpanded}
+          >
+            {isExpanded ? "折りたたむ" : "展開する"}
+          </button>
+        </div>
         <button
           onClick={handleAddToNote}
           className="add-transcript-button"
@@ -124,8 +134,12 @@ export function YoutubeTranscript({
           {isSummarizing ? "Summarizing..." : "Add to Note"}
         </button>
       </div>
-      <div className="transcript-content">
-        {transcript.length > 0 ? (
+      <div
+        className={`transcript-content ${
+          isExpanded ? "expanded" : "collapsed"
+        }`}
+      >
+        {isExpanded && transcript.length > 0 ? (
           <div>
             {transcript.map((item, index) => (
               <span key={index} className="transcript-item">
@@ -134,7 +148,11 @@ export function YoutubeTranscript({
             ))}
           </div>
         ) : (
-          <p>No transcript available for this video.</p>
+          <p>
+            {transcript.length > 0
+              ? "トランスクリプトを表示するには展開ボタンをクリックしてください"
+              : "No transcript available for this video."}
+          </p>
         )}
       </div>
     </div>
