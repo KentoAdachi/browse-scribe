@@ -35,7 +35,7 @@ export function YoutubeTranscript({
       try {
         setIsLoading(true);
         setError(null);
-        const result = await fetchTranscript(url);
+        const result = await fetchTranscript(url, { lang: "ja" });
         setTranscript(result);
       } catch (err) {
         setError(
