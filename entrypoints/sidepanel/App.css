@@ -60,7 +60,7 @@ body, html {
   overflow-x: hidden;
 }
 
-/* Header styling with button */
+/* Header styling with buttons */
 .header {
   display: flex;
   justify-content: space-between;
@@ -79,7 +79,12 @@ body, html {
   margin-right: 0.5rem;
 }
 
-.toggle-button {
+.header-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toggle-button, .settings-button {
   padding: 0.25rem 0.5rem;
   background-color: #f0f0f0;
   border: 1px solid #ccc;
@@ -90,19 +95,19 @@ body, html {
   flex-shrink: 0;
 }
 
-.toggle-button:hover {
+.toggle-button:hover, .settings-button:hover {
   background-color: #e0e0e0;
 }
 
-/* Dark mode support for the toggle button */
+/* Dark mode support for the buttons */
 @media (prefers-color-scheme: dark) {
-  .toggle-button {
+  .toggle-button, .settings-button {
     background-color: #4a4a4a;
     color: #ffffff;
     border-color: #666;
   }
   
-  .toggle-button:hover {
+  .toggle-button:hover, .settings-button:hover {
     background-color: #5a5a5a;
   }
 }

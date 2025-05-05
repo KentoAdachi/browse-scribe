@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchTranscript } from "youtube-transcript-plus";
 import OpenAI from "openai";
+import { useApiSettings } from "../hooks/useApiSettings";
 
 interface YoutubeTranscriptProps {
   url: string;
@@ -13,12 +14,6 @@ interface TranscriptItem {
   duration: number;
 }
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: "",
-  dangerouslyAllowBrowser: true, // Allow usage in browser environment
-});
-
 export function YoutubeTranscript({
   url,
   onAddToNote,
@@ -27,6 +22,13 @@ export function YoutubeTranscript({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
+  const { apiKey, model } = useApiSettings();
+
+  // Initialize OpenAI client with API key from settings
+  const openai = new OpenAI({
+    apiKey: apiKey || "",
+    dangerouslyAllowBrowser: true, // Allow usage in browser environment
+  });
 
   useEffect(() => {
     const getTranscript = async () => {
@@ -56,8 +58,12 @@ export function YoutubeTranscript({
 
   const summarizeTranscript = async (text: string): Promise<string> => {
     try {
+      if (!apiKey) {
+        return "APIキーが設定されていません。設定画面でAPIキーを設定してください。";
+      }
+
       const response = await openai.chat.completions.create({
-        model: "gpt-4.1-nano",
+        model: model || "gpt-4.1-nano",
         messages: [
           {
             role: "system",
@@ -77,7 +83,7 @@ export function YoutubeTranscript({
       );
     } catch (error) {
       console.error("OpenAI API error:", error);
-      return "要約の生成中にエラーが発生しました。";
+      return "要約の生成中にエラーが発生しました。APIキーが正しく設定されているか確認してください。";
     }
   };
 
@@ -112,7 +118,8 @@ export function YoutubeTranscript({
         <button
           onClick={handleAddToNote}
           className="add-transcript-button"
-          disabled={isSummarizing}
+          disabled={isSummarizing || !apiKey}
+          title={!apiKey ? "APIキーが設定されていません" : ""}
         >
           {isSummarizing ? "Summarizing..." : "Add to Note"}
         </button>

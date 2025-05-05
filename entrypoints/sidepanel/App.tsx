@@ -5,9 +5,11 @@ import { useTabs } from "./hooks/useTabs";
 import { NoteEditor } from "./components/NoteEditor";
 import { NotesList } from "./components/NotesList";
 import { YoutubeTranscript } from "./components/YoutubeTranscript";
+import { Settings } from "./components/Settings/Settings";
 
 function App() {
   const [showNotesList, setShowNotesList] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   // Initialize notes hook
   const {
@@ -67,6 +69,7 @@ function App() {
   const handleNoteClick = (url: string) => {
     navigateToUrl(url);
     setShowNotesList(false); // Switch back to note view
+    setShowSettings(false); // Ensure settings are closed
   };
 
   // Delete a note
@@ -83,21 +86,35 @@ function App() {
   // Toggle between current note view and notes list
   const toggleView = () => {
     setShowNotesList(!showNotesList);
+    setShowSettings(false); // Close settings when toggling view
     if (!showNotesList) {
       loadAllNotes(); // Refresh the notes list when showing it
     }
+  };
+
+  // Toggle settings view
+  const toggleSettings = () => {
+    setShowSettings(!showSettings);
+    setShowNotesList(false); // Close notes list when toggling settings
   };
 
   return (
     <div className="note-container">
       <div className="header">
         <h1>{title || "BrowseScribe"}</h1>
-        <button onClick={toggleView} className="toggle-button">
-          {showNotesList ? "Current Note" : "All Notes"}
-        </button>
+        <div className="header-buttons">
+          <button onClick={toggleSettings} className="settings-button">
+            {showSettings ? "Back" : "⚙️ Settings"}
+          </button>
+          <button onClick={toggleView} className="toggle-button">
+            {showNotesList ? "Current Note" : "All Notes"}
+          </button>
+        </div>
       </div>
 
-      {showNotesList ? (
+      {showSettings ? (
+        <Settings />
+      ) : showNotesList ? (
         <NotesList
           notes={allNotes}
           onNoteClick={handleNoteClick}
