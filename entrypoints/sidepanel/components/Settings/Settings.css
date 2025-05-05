@@ -1,0 +1,132 @@
+.settings-container {
+  padding: 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.settings-container h2 {
+  margin-top: 0;
+  color: #444;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid #eee;
+}
+
+@media (prefers-color-scheme: dark) {
+  .settings-container {
+    background-color: #242424;
+    border-color: #444;
+  }
+  
+  .settings-container h2 {
+    color: #e0e0e0;
+    border-bottom-color: #444;
+  }
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.api-key-input {
+  display: flex;
+  gap: 8px;
+}
+
+.api-key-input input {
+  flex-grow: 1;
+}
+
+input, select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #333;
+}
+
+.toggle-visibility {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.toggle-visibility:hover {
+  background-color: #e0e0e0;
+}
+
+.save-button {
+  background-color: #4a69bd;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+.save-button:hover {
+  background-color: #3c58a8;
+}
+
+.save-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.save-message {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  text-align: center;
+  border-radius: 4px;
+  background-color: #dff0d8;
+  color: #3c763d;
+}
+
+@media (prefers-color-scheme: dark) {
+  .form-group label {
+    color: #ccc;
+  }
+  
+  input, select {
+    background-color: #333;
+    color: #e0e0e0;
+    border-color: #555;
+  }
+  
+  .toggle-visibility {
+    background-color: #4a4a4a;
+    color: #e0e0e0;
+    border-color: #666;
+  }
+  
+  .toggle-visibility:hover {
+    background-color: #5a5a5a;
+  }
+  
+  .save-button:disabled {
+    background-color: #555;
+    color: #999;
+  }
+  
+  .save-message {
+    background-color: #2c4c30;
+    color: #a3d9a5;
+  }
+}
