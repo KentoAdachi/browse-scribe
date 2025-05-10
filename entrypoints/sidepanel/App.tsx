@@ -125,6 +125,7 @@ function App() {
           {isYoutubeUrl && (
             <YoutubeTranscript
               url={currentUrl}
+              title={currentTitle}
               onAddToNote={handleAddTranscriptToNote}
             />
           )}

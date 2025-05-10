@@ -5,6 +5,7 @@ import { useApiSettings } from "../hooks/useApiSettings";
 
 interface YoutubeTranscriptProps {
   url: string;
+  title: string;
   onAddToNote?: (transcript: string) => void;
 }
 
@@ -16,6 +17,7 @@ interface TranscriptItem {
 
 export function YoutubeTranscript({
   url,
+  title,
   onAddToNote,
 }: YoutubeTranscriptProps) {
   const [transcript, setTranscript] = useState<TranscriptItem[]>([]);
@@ -73,7 +75,7 @@ export function YoutubeTranscript({
           },
           {
             role: "user",
-            content: `以下のYouTube動画のトランスクリプトを要約してください:\n\n${text}`,
+            content: `以下のYouTube動画「${title}」のトランスクリプトを要約してください:\n\n${text}`,
           },
         ],
       });
@@ -94,7 +96,8 @@ export function YoutubeTranscript({
         const formattedTranscript = formatTranscript();
         const summary = await summarizeTranscript(formattedTranscript);
 
-        onAddToNote(`## YouTube Transcript Summary\n\n${summary}\n\n`);
+        const heading = "## YouTube Transcript Summary";
+        onAddToNote(`${heading}\n\n${summary}\n\n`);
       } catch (error) {
         console.error("Error during summarization:", error);
       } finally {
