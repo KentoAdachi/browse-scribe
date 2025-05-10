@@ -15,21 +15,6 @@ interface TranscriptItem {
   duration: number;
 }
 
-/**
- * YouTube URL から動画 ID (v パラメータまたは youtu.be/xxxx) を抽出
- */
-const extractVideoId = (youtubeUrl: string): string | null => {
-  try {
-    const urlObj = new URL(youtubeUrl);
-    if (urlObj.hostname === "youtu.be") {
-      return urlObj.pathname.slice(1);
-    }
-    return urlObj.searchParams.get("v");
-  } catch {
-    return null;
-  }
-};
-
 export function YoutubeTranscript({
   url,
   title,
@@ -83,10 +68,7 @@ export function YoutubeTranscript({
     return transcript.map(({ text, offset }) => ({ text, offset }));
   };
 
-  const summarizeTranscript = async (
-    text: string,
-    videoId: string | null
-  ): Promise<string> => {
+  const summarizeTranscript = async (text: string): Promise<string> => {
     try {
       if (!apiKey) {
         return "APIキーが設定されていません。設定画面でAPIキーを設定してください。";
@@ -98,13 +80,11 @@ export function YoutubeTranscript({
           {
             role: "system",
             content:
-              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。最初に動画全体の概要を簡潔に説明後、各トピックは見出し3（###）で始めてください。各トピックには再生位置をリンクとして記載してください。",
+              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。最初に動画全体の概要を簡潔に説明後、各トピックは見出し3（###）で始めてください。箇条書きの際、参照した再生位置をリンクとして記載してください。",
           },
           {
             role: "user",
-            content: `動画ID: ${
-              videoId ?? "不明"
-            }\n\n以下のYouTube動画「${title}」のトランスクリプトを要約してください:\n\n${text}`,
+            content: `以下のYouTube動画「${title}」のトランスクリプトを要約してください:\n\n${text}`,
           },
         ],
       });
@@ -128,8 +108,7 @@ export function YoutubeTranscript({
         const transcriptText = transcriptItems
           .map((item) => item.text)
           .join(" ");
-        const videoId = extractVideoId(url);
-        const summary = await summarizeTranscript(transcriptText, videoId);
+        const summary = await summarizeTranscript(transcriptText);
 
         const heading = "## YouTube Transcript Summary";
         onAddToNote(`${heading}\n\n${summary}\n\n`);
