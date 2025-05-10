@@ -76,7 +76,6 @@ export function YoutubeTranscript({
             content: `以下のYouTube動画のトランスクリプトを要約してください:\n\n${text}`,
           },
         ],
-        max_tokens: 500,
       });
 
       return (
