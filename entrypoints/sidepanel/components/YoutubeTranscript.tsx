@@ -39,7 +39,6 @@ export function YoutubeTranscript({
         setIsLoading(true);
         setError(null);
         const result = await fetchTranscript(url, { lang: "ja" });
-        console.log("Transcript fetched:", result);
         setTranscript(result);
       } catch (err) {
         setError(
@@ -56,16 +55,8 @@ export function YoutubeTranscript({
     }
   }, [url]);
 
-  interface TextOffset {
-    text: string;
-    offset: number;
-  }
-
-  /**
-   * トランスクリプト中の各発話を `{ text, offset }` 形式で返す
-   */
-  const formatTranscript = (): TextOffset[] => {
-    return transcript.map(({ text, offset }) => ({ text, offset }));
+  const formatTranscript = (): string => {
+    return transcript.map((item) => item.text).join(" ");
   };
 
   const summarizeTranscript = async (text: string): Promise<string> => {
@@ -80,7 +71,7 @@ export function YoutubeTranscript({
           {
             role: "system",
             content:
-              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。最初に動画全体の概要を簡潔に説明後、各トピックは見出し3（###）で始めてください。箇条書きの際、参照した再生位置をリンクとして記載してください。",
+              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。最初に動画全体の概要を簡潔に説明後、各トピックは見出し3（###）で始めてください。",
           },
           {
             role: "user",
@@ -102,13 +93,8 @@ export function YoutubeTranscript({
     if (onAddToNote && transcript.length > 0) {
       try {
         setIsSummarizing(true);
-        // text と offset の対応が取れた配列を取得
-        const transcriptItems = formatTranscript();
-        // 要約用にはテキストのみを連結して渡す
-        const transcriptText = transcriptItems
-          .map((item) => item.text)
-          .join(" ");
-        const summary = await summarizeTranscript(transcriptText);
+        const formattedTranscript = formatTranscript();
+        const summary = await summarizeTranscript(formattedTranscript);
 
         const heading = "## YouTube Transcript Summary";
         onAddToNote(`${heading}\n\n${summary}\n\n`);
