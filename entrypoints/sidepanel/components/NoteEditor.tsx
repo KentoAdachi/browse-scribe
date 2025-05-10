@@ -57,6 +57,16 @@ export function NoteEditor({
     }
   };
 
+  // プレビュー領域クリック時の処理
+  // ⇢ <a> 要素をクリックした場合は編集モードへ入らず
+  //    デフォルトのリンク動作（遷移）を優先する
+  const handlePreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest("a")) {
+      return;
+    }
+    setIsEditing(true);
+  };
+
   return (
     <>
       <div className="last-updated-info">
@@ -86,9 +96,17 @@ export function NoteEditor({
           }}
         />
       ) : (
-        <div className="note-preview" onClick={() => setIsEditing(true)}>
+        <div className="note-preview" onClick={handlePreviewClick}>
           {note ? (
-            <ReactMarkdown>{note}</ReactMarkdown>
+            <ReactMarkdown
+              components={{
+                a: ({ node, ...props }) => (
+                  <a {...props} target="_blank" rel="noopener noreferrer" />
+                ),
+              }}
+            >
+              {note}
+            </ReactMarkdown>
           ) : (
             <p className="empty-note">Click to add a note for this page</p>
           )}
