@@ -1,5 +1,8 @@
 # BrowseScribe
 
+![ブラウズスクライブ](https://github.com/user-attachments/assets/0ec1aacf-91f1-4363-b06d-aac953585b00)
+
+
 ブラウザのサイドパネルに **ページ URL ごとに Markdown メモ** を保存できる、Chrome / Firefox (Manifest V3) 拡張機能です。  
 YouTube 動画を開くと自動で **日本語トランスクリプトを取得して要約** し、ワンクリックでメモに貼り付けることもできます。  
 キーボードショートカット **`Alt+M`**（デフォルト）でサイドパネルをすばやく開閉できます。
