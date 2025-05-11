@@ -39,8 +39,29 @@ export function YoutubeTranscript({
       try {
         setIsLoading(true);
         setError(null);
-        const result = await fetchTranscript(url, { lang: "ja" });
-        setTranscript(result);
+
+        // まず日本語のトランスクリプトを試みる
+        try {
+          const result = await fetchTranscript(url, { lang: "ja" });
+          setTranscript(result);
+          return; // 日本語のトランスクリプトが取得できた場合は終了
+        } catch (jaErr) {
+          console.log(
+            "日本語のトランスクリプト取得に失敗しました。英語を試みます:",
+            jaErr
+          );
+
+          // 日本語が失敗した場合、英語のトランスクリプトを試みる
+          try {
+            const result = await fetchTranscript(url, { lang: "en" });
+            setTranscript(result);
+          } catch (enErr) {
+            // 両方の言語が失敗した場合はエラーをスロー
+            throw new Error(
+              "日本語と英語の両方のトランスクリプト取得に失敗しました"
+            );
+          }
+        }
       } catch (err) {
         setError(
           "Failed to load transcript. This video may not have captions available."
@@ -158,7 +179,7 @@ export function YoutubeTranscript({
         ) : (
           <p>
             {transcript.length > 0
-              ? "トランスクリプトを表示するには展開ボタンをクリックしてください"
+              ? "Click expand to view transcript"
               : "No transcript available for this video."}
           </p>
         )}
