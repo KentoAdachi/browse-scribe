@@ -34,6 +34,7 @@ YouTube 動画を開くと自動で日本語トランスクリプトを取得し
 3. `pnpm run build` で `dist/` が生成される。  
 4. ブラウザの `chrome://extensions` → 「デベロッパーモード ON」 → 「パッケージ化されていない拡張機能を読み込む」で `dist/` を選択。
 
+または、Releaseからzipをダウンロード
 ### Firefox
 
 ```
