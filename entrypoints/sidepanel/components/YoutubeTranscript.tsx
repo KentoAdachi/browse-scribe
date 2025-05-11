@@ -56,6 +56,11 @@ export function YoutubeTranscript({
     }
   }, [url]);
 
+  // Clear error when URL changes to avoid persisting error state across videos
+  useEffect(() => {
+    setError(null);
+  }, [url]);
+
   const formatTranscript = (): string => {
     return transcript.map((item) => item.text).join(" ");
   };
