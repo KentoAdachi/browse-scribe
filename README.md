@@ -106,27 +106,6 @@ wxt.config.ts               # WXT ビルド&ランナー設定
 
 ---
 
-## よくある質問
-
-### Q. メモはどこに保存されますか？
-
-ブラウザの `storage.local`（拡張機能用ストレージ）に URL をキーに JSON 形式で保存されます。クラウド同期は現状行っていません。
-
-### Q. OpenAI API キーは安全ですか？
-
-暗号化せずに `storage.local` に保存します。公共 PC 等での使用は推奨しません。
-
----
-
-## 今後のロードマップ
-
-- メモのクラウド同期（GitHub Gist / Dropbox 等）  
-- ダークテーマ  
-- トランスクリプトの全文検索  
-- Edge ブラウザ正式対応  
-
----
-
 ## ライセンス
 
 MIT License © 2025 BrowseScribe contributors
