@@ -7,6 +7,8 @@ export function Settings() {
   const {
     apiKey,
     setApiKey,
+    baseUrl,
+    setBaseUrl,
     model,
     setModel,
     saveSettings,
@@ -19,7 +21,7 @@ export function Settings() {
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
   const [showApiKey, setShowApiKey] = useState(false);
 
-  // Fetch models from OpenAI API when apiKey changes
+  // Fetch models from OpenAI API when settings change
   useEffect(() => {
     const fetchModels = async () => {
       if (!apiKey) {
@@ -33,22 +35,25 @@ export function Settings() {
 
         const openai = new OpenAI({
           apiKey: apiKey,
+          baseURL: baseUrl,
           dangerouslyAllowBrowser: true, // Allow usage in browser environment
         });
 
         const response = await openai.models.list();
-        const models = response.data.map((model) => model.id);
+        const models = response.data.map((m) => m.id);
         setAvailableModels(models);
       } catch (error) {
         console.error("Error fetching models:", error);
-        setModelLoadError("Failed to load models. Please check your API key.");
+        setModelLoadError(
+          "Failed to load models. Please check your API key / base URL."
+        );
       } finally {
         setIsLoadingModels(false);
       }
     };
 
     fetchModels();
-  }, [apiKey]);
+  }, [apiKey, baseUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +64,7 @@ export function Settings() {
     <div className="settings-container">
       <h2>OpenAI API Settings</h2>
       <form onSubmit={handleSubmit}>
+        {/* API KEY */}
         <div className="form-group">
           <label htmlFor="api-key">API Key:</label>
           <div className="api-key-input">
@@ -72,13 +78,26 @@ export function Settings() {
             <button
               type="button"
               className="toggle-visibility"
-              onClick={() => setShowApiKey(!showApiKey)}
+              onClick={() => setShowApiKey((prev) => !prev)}
             >
               {showApiKey ? "Hide" : "Show"}
             </button>
           </div>
         </div>
 
+        {/* BASE URL */}
+        <div className="form-group">
+          <label htmlFor="base-url">Base URL:</label>
+          <input
+            type="text"
+            id="base-url"
+            value={baseUrl}
+            onChange={(e) => setBaseUrl(e.target.value)}
+            placeholder="https://api.openai.com/v1"
+          />
+        </div>
+
+        {/* MODEL */}
         <div className="form-group">
           <label htmlFor="model">Model:</label>
           <select
@@ -90,9 +109,9 @@ export function Settings() {
             {isLoadingModels ? (
               <option value="">Loading models...</option>
             ) : availableModels.length > 0 ? (
-              availableModels.map((modelOption) => (
-                <option key={modelOption} value={modelOption}>
-                  {modelOption}
+              availableModels.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
                 </option>
               ))
             ) : (
@@ -106,10 +125,10 @@ export function Settings() {
           )}
         </div>
 
+        {/* SAVE */}
         <button type="submit" className="save-button" disabled={isSaving}>
           {isSaving ? "Saving..." : "Save Settings"}
         </button>
-
         {saveMessage && <div className="save-message">{saveMessage}</div>}
       </form>
     </div>
