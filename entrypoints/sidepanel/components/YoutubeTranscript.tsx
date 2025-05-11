@@ -25,11 +25,12 @@ export function YoutubeTranscript({
   const [error, setError] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const { apiKey, model } = useApiSettings();
+  const { apiKey, model, baseUrl } = useApiSettings();
 
   // Initialize OpenAI client with API key from settings
   const openai = new OpenAI({
     apiKey: apiKey || "",
+    baseURL: baseUrl,
     dangerouslyAllowBrowser: true, // Allow usage in browser environment
   });
 
