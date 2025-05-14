@@ -33,7 +33,7 @@ YouTube 動画を開くと自動で字幕情報を取得し、ワンクリック
 
 ## インストール
 
-1. Releaseからzipをダウンロードして解凍
+1. Releaseから[zip](https://github.com/KentoAdachi/browse-scribe/releases/download/v0.0.1/browse-scribe-0.0.1-chrome.zip)をダウンロードして解凍
 2. ブラウザの `chrome://extensions` → 「デベロッパーモード ON」 → 「パッケージ化されていない拡張機能を読み込む」で 解凍したフォルダを選択
 3. `alt+m` でサイドパネルを開く
    - サイドパネルが開かない場合は、拡張機能のアイコン横の三点リーダーをクリックしてみてください。
