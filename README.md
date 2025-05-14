@@ -4,7 +4,7 @@
 
 
 ブラウザのサイドパネルに **ページ URL ごとに Markdown メモ** を保存できる、Chrome / Firefox (Manifest V3) 拡張機能です。  
-YouTube 動画を開くと自動で日本語トランスクリプトを取得し、ワンクリックで要約をメモに貼り付けることもできます。  
+YouTube 動画を開くと自動で字幕情報を取得し、ワンクリックで要約をメモに貼り付けることができます。  
 キーボードショートカット **`Alt+M`**（デフォルト）でサイドパネルをすばやく開閉できます。
 
 ![BrowseScribe demo](./assets/readme-demo.gif)
@@ -18,46 +18,29 @@ YouTube 動画を開くと自動で日本語トランスクリプトを取得し
 | ページ別メモ保存 | URL をキーに自動でメモをひも付け。ページを再訪するとサイドパネルにメモを表示。 |
 | Markdown サポート | フォーカス時はプレーンテキスト、フォーカスを外すとリアルタイムプレビュー。 |
 | メモ一覧 | すべての保存メモを一覧表示。クリックで対象ページにジャンプ、ゴミ箱アイコンで削除。 |
-| YouTube トランスクリプト取得 | `youtube-transcript-plus` でキャプション取得（日本語優先）。 |
+| YouTube 字幕取得 | `youtube-transcript-plus` でキャプション取得（日本語優先）。 |
 | GPT で要約 | OpenAI API キーとモデルを設定すると、動画キャプションを日本語 Markdown で要約しメモに追加。 |
-| 設定画面 | OpenAI API キー・モデルを保存。ブラウザストレージに暗号化せず保存される点に注意。 |
-| 自動ページ追従 | タブの URL / タイトル変更やタブ切替にも追従してメモを表示し続ける。 |
 
 ---
 
 ## インストール
 
-### Chrome
-
-1. このリポジトリを `git clone`。  
-2. `pnpm i`（または `npm i`）  
-3. `pnpm run build` で `dist/` が生成される。  
-4. ブラウザの `chrome://extensions` → 「デベロッパーモード ON」 → 「パッケージ化されていない拡張機能を読み込む」で `dist/` を選択。
-
-または、Releaseからzipをダウンロード
-### Firefox
-
-```
-pnpm run build:firefox
-```
-
-生成された `dist-firefox/` を `about:debugging#/runtime/this-firefox` から「一時的に読み込む」。
-
----
+1. Releaseからzipをダウンロードして解凍
+2. ブラウザの `chrome://extensions` → 「デベロッパーモード ON」 → 「パッケージ化されていない拡張機能を読み込む」で 解凍したフォルダを選択
+3. `alt+m` でサイドパネルを開く
+   - サイドパネルが開かない場合は、拡張機能のアイコン横の三点リーダーをクリックしてみてください。
+4. サイドパネル右上の ⚙️ Settings をクリック
+   - API Key: OpenAI API キーを入力
+   - Base URL: `https://api.openai.com/v1` (互換サーバーを使用する場合は変更)
+   - Model: 使用するモデル(デフォルト: `gpt-4.1-nano`)
 
 ## 開発
 
 ホットリロード付きローカル開発サーバーを起動:
 
 ```
-# Chrome
 pnpm dev
-
-# Firefox
-pnpm dev:firefox
 ```
-
-起動後、案内に従い拡張を読み込むと変更が即反映されます。
 
 ---
 
@@ -80,14 +63,6 @@ wxt.config.ts               # WXT ビルド&ランナー設定
 
 ---
 
-## 設定画面
-
-1. サイドパネル右上「⚙️ Settings」をクリック  
-2. OpenAI API キーとモデル名（例: `gpt-4o-mini`）を入力し **Save**  
-3. 保存成功メッセージが 3 秒表示されます
-
----
-
 ## 依存技術
 
 - [React 19](https://react.dev/)
@@ -101,12 +76,9 @@ wxt.config.ts               # WXT ビルド&ランナー設定
 
 | アクション | キー |
 |------------|------|
+| 拡張機能を有効化(ポップアップメニューを開く) | 割り当てなし |
 | サイドパネルを開く | `Alt + M` |
 
-（`chrome://extensions/shortcuts` や `about:addons` で変更可）
+（`chrome://extensions/shortcuts` で変更可）
 
----
-
-## ライセンス
-
-MIT License © 2025 BrowseScribe contributors
+ポップアップメニューは開くと自動でフォーカスが当たるため、ショートカットから呼び出すことで手軽にメモを取ることができます。
