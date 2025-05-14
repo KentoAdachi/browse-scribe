@@ -8,7 +8,7 @@ YouTube 動画を開くと自動で字幕情報を取得し、ワンクリック
 キーボードショートカット **`Alt+M`**（デフォルト）でサイドパネルをすばやく開閉できます。
 
 スクリーンショット
-| 動画の概要を素早く把握 | 全画面表示も可能 |
+| 動画の概要を素早く把握 | 全画面表示も対応 |
 | ---- | ---- |
 | ![image](https://github.com/user-attachments/assets/956d9576-e453-4e3b-b088-90236e74285e) | ![image](https://github.com/user-attachments/assets/beded390-99b0-4a76-89ff-a2e3cf30f44e) |
 
