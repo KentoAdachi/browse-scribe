@@ -336,7 +336,6 @@ body, html {
   /* ダークモード時のコードブロックとインラインコードのスタイル */
   .note-preview code:not(pre code) {
     background-color: #333;
-     color: #e87400
   }
   
   .note-preview pre code {
@@ -347,6 +346,10 @@ body, html {
     background-color: #333;
   }
 }
+
+  .note-preview code:not(pre code) {
+     color: #e87400
+  }
 
 .note-item-title {
   font-weight: bold;
