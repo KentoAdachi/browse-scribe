@@ -332,6 +332,20 @@ body, html {
     color: #e0e0e0;
     border-bottom-color: #444;
   }
+  
+  /* ダークモード時のコードブロックとインラインコードのスタイル */
+  .note-preview code:not(pre code) {
+    background-color: #333;
+     color: #e87400
+  }
+  
+  .note-preview pre code {
+    background-color: #333;
+    color: #e0e0e0;
+  }
+  .note-preview pre {
+    background-color: #333;
+  }
 }
 
 .note-item-title {
