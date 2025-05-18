@@ -37,9 +37,49 @@ export function NotesList({
           })
           .sort((a, b) => (b.lastUpdated ?? 0) - (a.lastUpdated ?? 0));
 
+  // ---- Export handlers ----
+  const handleExportCSV = () => {
+    const csvHeader = ["URL", "Title", "Content", "Last Updated"].join(",");
+    const csvRows = notes.map((n) => {
+      const dateStr = n.lastUpdated
+        ? new Date(n.lastUpdated).toISOString()
+        : "";
+      const escape = (str: string) => `"${str.replace(/"/g, '""')}"`;
+      return [
+        escape(n.url),
+        escape(n.title || ""),
+        escape(n.content),
+        escape(dateStr),
+      ].join(",");
+    });
+    const csvContent = [csvHeader, ...csvRows].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "notes_export.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportJSON = () => {
+    const jsonContent = JSON.stringify(notes, null, 2);
+    const blob = new Blob([jsonContent], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "notes_export.json";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="notes-list">
       <h2>All Notes ({notes.length})</h2>
+      <div className="export-buttons">
+        <button onClick={handleExportCSV}>Export CSV</button>
+        <button onClick={handleExportJSON}>Export JSON</button>
+      </div>
 
       <div className="search-container">
         <input
