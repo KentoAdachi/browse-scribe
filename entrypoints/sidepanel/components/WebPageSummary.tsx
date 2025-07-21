@@ -18,6 +18,7 @@ export function WebPageSummary({
   const [error, setError] = useState<string | null>(null);
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState<string>("");
   const { apiKey, model, baseUrl } = useApiSettings();
 
   // Initialize OpenAI client with API key from settings
@@ -160,16 +161,61 @@ export function WebPageSummary({
     }
   };
 
+  const askQuestion = async (text: string, prompt: string): Promise<string> => {
+    try {
+      if (!apiKey) {
+        return "APIキーが設定されていません。設定画面でAPIキーを設定してください。";
+      }
+
+      const response = await openai.chat.completions.create({
+        model: model || "gpt-4.1-nano",
+        messages: [
+          {
+            role: "system",
+            content:
+              "あなたはWebページの内容分析の専門家です。以下のWebページの内容に基づいて、ユーザーの質問に正確に答えてください。回答は日本語で行い、Markdownを使って読みやすく整理してください。ページの内容に含まれていない情報については、「ページに記載されていません」と明記してください。",
+          },
+          {
+            role: "user",
+            content: `以下のWebページ「${title}」の内容に基づいて質問に答えてください。\n\n【質問】\n${prompt}\n\n【Webページの内容】\n${text}`,
+          },
+        ],
+      });
+
+      return (
+        response.choices[0]?.message?.content || "回答を生成できませんでした。"
+      );
+    } catch (error) {
+      console.error("OpenAI API error:", error);
+      return "回答の生成中にエラーが発生しました。APIキーが正しく設定されているか確認してください。";
+    }
+  };
+
   const handleAddToNote = async () => {
     if (onAddToNote && content) {
       try {
         setIsSummarizing(true);
-        const summary = await summarizeContent(content);
+        const isCustomPrompt = customPrompt.trim().length > 0;
 
-        const heading = "## Web Page Summary";
-        onAddToNote(`${heading}\n\n${summary}\n\n`);
+        let result: string;
+        let heading: string;
+
+        if (isCustomPrompt) {
+          result = await askQuestion(content, customPrompt.trim());
+          heading = "## Web Page Analysis";
+        } else {
+          result = await summarizeContent(content);
+          heading = "## Web Page Summary";
+        }
+
+        onAddToNote(`${heading}\n\n${result}\n\n`);
+
+        // Clear the custom prompt after successful processing
+        if (isCustomPrompt) {
+          setCustomPrompt("");
+        }
       } catch (error) {
-        console.error("Error during summarization:", error);
+        console.error("Error during processing:", error);
       } finally {
         setIsSummarizing(false);
       }
@@ -183,6 +229,8 @@ export function WebPageSummary({
   if (error) {
     return <div className="transcript-error">{error}</div>;
   }
+
+  const isCustomPrompt = customPrompt.trim().length > 0;
 
   return (
     <div className="youtube-transcript">
@@ -203,9 +251,43 @@ export function WebPageSummary({
           disabled={isSummarizing || !apiKey}
           title={!apiKey ? "APIキーが設定されていません" : ""}
         >
-          {isSummarizing ? "Summarizing..." : "Add to Note"}
+          {isSummarizing
+            ? isCustomPrompt
+              ? "分析中..."
+              : "要約中..."
+            : isCustomPrompt
+            ? "質問する"
+            : "要約する"}
         </button>
       </div>
+
+      {/* Custom prompt input */}
+      <div
+        className="prompt-input-container"
+        style={{ padding: "10px", borderBottom: "1px solid #eee" }}
+      >
+        <textarea
+          value={customPrompt}
+          onChange={(e) => setCustomPrompt(e.target.value)}
+          placeholder="質問を入力してください（空の場合は要約を生成します）"
+          rows={3}
+          style={{
+            width: "100%",
+            padding: "8px",
+            border: "1px solid #ddd",
+            borderRadius: "4px",
+            fontSize: "14px",
+            resize: "vertical",
+            fontFamily: "inherit",
+          }}
+        />
+        {customPrompt.trim() && (
+          <div style={{ marginTop: "5px", fontSize: "12px", color: "#666" }}>
+            質問モード: このページの内容について質問します
+          </div>
+        )}
+      </div>
+
       <div
         className={`transcript-content ${
           isExpanded ? "expanded" : "collapsed"
