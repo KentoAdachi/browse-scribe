@@ -20,9 +20,6 @@ importers:
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.1.2)(react@19.1.0)
-      youtube-transcript-plus:
-        specifier: ^1.0.4
-        version: 1.0.4
     devDependencies:
       '@types/react':
         specifier: ^19.1.2
@@ -2432,10 +2429,6 @@ packages:
 
   yauzl@2.10.0:
     resolution: {integrity: sha512-p4a9I6X6nu6IhoGmBqAcbJy1mlC4j27vEPZX9F4L4/vZT3Lyq1VkFHw/V/PUcB9Buo+DG3iHkT0x3Qya58zc3g==}
-
-  youtube-transcript-plus@1.0.4:
-    resolution: {integrity: sha512-FtlCH2tYLrEmJWLQYCxwsvI0X7iv3tsLgJjEqOboHC4pMM9o1G6URbSegERDsnDWCkUtTFVd+khkvX9ohLLQpg==}
-    engines: {node: '>=18.0.0'}
 
   zip-dir@2.0.0:
     resolution: {integrity: sha512-uhlsJZWz26FLYXOD6WVuq+fIcZ3aBPGo/cFdiLlv3KNwpa52IF3ISV8fLhQLiqVu5No3VhlqlgthN6gehil1Dg==}
@@ -5035,8 +5028,6 @@ snapshots:
     dependencies:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
-
-  youtube-transcript-plus@1.0.4: {}
 
   zip-dir@2.0.0:
     dependencies:

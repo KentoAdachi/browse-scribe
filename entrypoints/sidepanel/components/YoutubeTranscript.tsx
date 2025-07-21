@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { fetchTranscript } from "youtube-transcript-plus";
 import OpenAI from "openai";
 import { useApiSettings } from "../hooks/useApiSettings";
 
@@ -13,6 +12,21 @@ interface TranscriptItem {
   text: string;
   offset: number;
   duration: number;
+}
+
+interface ApiTranscriptResponse {
+  status: string;
+  transcript: {
+    is_generated: boolean;
+    language: string;
+    language_code: string;
+    snippets: {
+      duration: number;
+      start: number;
+      text: string;
+    }[];
+    video_id: string;
+  };
 }
 
 export function YoutubeTranscript({
@@ -34,34 +48,53 @@ export function YoutubeTranscript({
     dangerouslyAllowBrowser: true, // Allow usage in browser environment
   });
 
+  // Extract video ID from YouTube URL
+  const extractVideoId = (url: string): string | null => {
+    const regex =
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  // Fetch transcript from local API
+  const fetchTranscriptFromApi = async (
+    videoId: string
+  ): Promise<TranscriptItem[]> => {
+    const response = await fetch(
+      `http://127.0.0.1:5000/api/transcript/${videoId}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status}`);
+    }
+
+    const data: ApiTranscriptResponse = await response.json();
+
+    if (data.status !== "success") {
+      throw new Error("API returned error status");
+    }
+
+    // Convert API response format to our internal format
+    return data.transcript.snippets.map((snippet) => ({
+      text: snippet.text,
+      offset: snippet.start,
+      duration: snippet.duration,
+    }));
+  };
+
   useEffect(() => {
     const getTranscript = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        // まず日本語のトランスクリプトを試みる
-        try {
-          const result = await fetchTranscript(url, { lang: "ja" });
-          setTranscript(result);
-          return; // 日本語のトランスクリプトが取得できた場合は終了
-        } catch (jaErr) {
-          console.log(
-            "日本語のトランスクリプト取得に失敗しました。英語を試みます:",
-            jaErr
-          );
-
-          // 日本語が失敗した場合、英語のトランスクリプトを試みる
-          try {
-            const result = await fetchTranscript(url, { lang: "en" });
-            setTranscript(result);
-          } catch (enErr) {
-            // 両方の言語が失敗した場合はエラーをスロー
-            throw new Error(
-              "日本語と英語の両方のトランスクリプト取得に失敗しました"
-            );
-          }
+        const videoId = extractVideoId(url);
+        if (!videoId) {
+          throw new Error("Invalid YouTube URL");
         }
+
+        const result = await fetchTranscriptFromApi(videoId);
+        setTranscript(result);
       } catch (err) {
         setError(
           "Failed to load transcript. This video may not have captions available."
