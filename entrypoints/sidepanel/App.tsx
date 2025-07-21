@@ -5,6 +5,7 @@ import { useTabs } from "./hooks/useTabs";
 import { NoteEditor } from "./components/NoteEditor";
 import { NotesList } from "./components/NotesList";
 import { YoutubeTranscript } from "./components/YoutubeTranscript";
+import { WebPageSummary } from "./components/WebPageSummary";
 import { Settings } from "./components/Settings/Settings";
 
 function App() {
@@ -122,8 +123,14 @@ function App() {
         />
       ) : (
         <>
-          {isYoutubeUrl && (
+          {isYoutubeUrl ? (
             <YoutubeTranscript
+              url={currentUrl}
+              title={currentTitle}
+              onAddToNote={handleAddTranscriptToNote}
+            />
+          ) : (
+            <WebPageSummary
               url={currentUrl}
               title={currentTitle}
               onAddToNote={handleAddTranscriptToNote}
