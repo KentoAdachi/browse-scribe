@@ -1,0 +1,45 @@
+{
+  "app": {
+    "name": "BrowseScribe",
+    "description": "ブラウザのサイドパネルにページURLごとにMarkdownメモを保存"
+  },
+  "buttons": {
+    "settings": "設定",
+    "back": "戻る",
+    "allNotes": "全てのメモ",
+    "currentNote": "現在のメモ",
+    "addToNote": "メモに追加",
+    "expand": "展開",
+    "collapse": "折りたたみ"
+  },
+  "youtube": {
+    "transcript": "YouTube 字幕",
+    "summary": "YouTube 字幕要約",
+    "loading": "字幕を読み込み中...",
+    "noTranscript": "この動画の字幕は利用できません。",
+    "addToNote": "メモに追加"
+  },
+  "webPage": {
+    "summary": "ウェブページ要約",
+    "analysis": "ウェブページ分析",
+    "loading": "ページ内容を読み込み中...",
+    "noContent": "このページの内容は利用できません。",
+    "questionMode": "質問モード: このページの内容について質問します",
+    "customPrompt": "分析用カスタムプロンプト"
+  },
+  "settings": {
+    "title": "設定",
+    "apiKey": "APIキー",
+    "baseUrl": "ベースURL",
+    "model": "モデル",
+    "save": "保存",
+    "apiKeyPlaceholder": "OpenAI APIキーを入力してください",
+    "modelPlaceholder": "例: gpt-4.1-nano"
+  },
+  "notes": {
+    "lastUpdated": "最終更新",
+    "noUpdateRecord": "更新記録なし",
+    "delete": "削除",
+    "confirmDelete": "このメモを削除してもよろしいですか？"
+  }
+}
