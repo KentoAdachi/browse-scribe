@@ -14,19 +14,34 @@ interface TranscriptItem {
   duration: number;
 }
 
-interface ApiTranscriptResponse {
-  status: string;
-  transcript: {
-    is_generated: boolean;
-    language: string;
-    language_code: string;
-    snippets: {
-      duration: number;
-      start: number;
-      text: string;
-    }[];
-    video_id: string;
+// NoteGPT API response types
+interface NoteGptResponse {
+  code: number; // 100000 = success
+  message: string;
+  data: NoteGptData;
+}
+
+interface NoteGptData {
+  videoId: string;
+  videoInfo: {
+    name: string;
+    author: string;
+    duration: string;
   };
+  language_code: Array<{ code: string; name: string }>;
+  transcripts: Record<string, TranscriptLanguage>;
+}
+
+interface TranscriptLanguage {
+  custom?: TranscriptSegment[];
+  default?: TranscriptSegment[];
+  auto?: TranscriptSegment[];
+}
+
+interface TranscriptSegment {
+  start: string; // "HH:MM:SS" or "MM:SS"
+  end: string;
+  text: string;
 }
 
 export function YoutubeTranscript({
@@ -56,30 +71,73 @@ export function YoutubeTranscript({
     return match ? match[1] : null;
   };
 
-  // Fetch transcript from local API
+  // Parse timestamp string ("HH:MM:SS" or "MM:SS") to seconds
+  const parseTimestamp = (timestamp: string): number => {
+    const parts = timestamp.split(":").map(Number);
+    if (parts.length === 3) {
+      // HH:MM:SS format
+      return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    }
+    // MM:SS format
+    return parts[0] * 60 + parts[1];
+  };
+
+  // Fetch transcript from NoteGPT API
   const fetchTranscriptFromApi = async (
     videoId: string
   ): Promise<TranscriptItem[]> => {
-    const response = await fetch(
-      `http://127.0.0.1:5000/api/transcript/${videoId}`
-    );
+    const url = new URL("https://notegpt.io/api/v2/video-transcript");
+    url.searchParams.append("platform", "youtube");
+    url.searchParams.append("video_id", videoId);
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        Cookie: "anonymous_user_id=2500e00db502a74d4fd5d1b754d436fe",
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`API request failed: ${response.status}`);
     }
 
-    const data: ApiTranscriptResponse = await response.json();
+    const data: NoteGptResponse = await response.json();
 
-    if (data.status !== "success") {
-      throw new Error("API returned error status");
+    // Check if API returned success code
+    if (data.code !== 100000) {
+      throw new Error(`API error: ${data.message}`);
     }
 
-    // Convert API response format to our internal format
-    return data.transcript.snippets.map((snippet) => ({
-      text: snippet.text,
-      offset: snippet.start,
-      duration: snippet.duration,
-    }));
+    // Extract transcripts - priority: default > auto > custom
+    const languageCode = data.data.language_code[0]?.code;
+    if (!languageCode) {
+      throw new Error("No language code found in response");
+    }
+
+    const transcriptLanguage = data.data.transcripts[languageCode];
+    if (!transcriptLanguage) {
+      throw new Error("No transcript found for language code");
+    }
+
+    // Select transcript segments based on priority
+    const segments =
+      transcriptLanguage.default ||
+      transcriptLanguage.auto ||
+      transcriptLanguage.custom;
+
+    if (!segments || segments.length === 0) {
+      throw new Error("No transcript segments found");
+    }
+
+    // Convert NoteGPT format to internal format
+    return segments.map((segment) => {
+      const startSeconds = parseTimestamp(segment.start);
+      const endSeconds = parseTimestamp(segment.end);
+      return {
+        text: segment.text,
+        offset: startSeconds,
+        duration: endSeconds - startSeconds,
+      };
+    });
   };
 
   useEffect(() => {
