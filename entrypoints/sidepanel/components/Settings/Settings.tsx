@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useApiSettings } from "../../hooks/useApiSettings";
 import "./Settings.css";
-import OpenAI from "openai";
+import { createAIService, AIProvider } from "../../services/aiService";
 
 export function Settings() {
   const {
@@ -11,6 +11,8 @@ export function Settings() {
     setBaseUrl,
     model,
     setModel,
+    provider,
+    setProvider,
     saveSettings,
     isSaving,
     saveMessage,
@@ -21,7 +23,7 @@ export function Settings() {
   const [modelLoadError, setModelLoadError] = useState<string | null>(null);
   const [showApiKey, setShowApiKey] = useState(false);
 
-  // Fetch models from OpenAI API when settings change
+  // Fetch models from AI provider when settings change
   useEffect(() => {
     const fetchModels = async () => {
       if (!apiKey) {
@@ -33,15 +35,14 @@ export function Settings() {
         setIsLoadingModels(true);
         setModelLoadError(null);
 
-        const openai = new OpenAI({
-          apiKey: apiKey,
-          baseURL: baseUrl,
-          dangerouslyAllowBrowser: true, // Allow usage in browser environment
-        });
-
-        const response = await openai.models.list();
-        const models = response.data.map((m) => m.id);
-        setAvailableModels(models);
+        const aiService = createAIService(provider, apiKey, baseUrl);
+        
+        if (aiService.listModels) {
+          const models = await aiService.listModels();
+          setAvailableModels(models);
+        } else {
+          setAvailableModels([]);
+        }
       } catch (error) {
         console.error("Error fetching models:", error);
         setModelLoadError(
@@ -53,7 +54,7 @@ export function Settings() {
     };
 
     fetchModels();
-  }, [apiKey, baseUrl]);
+  }, [apiKey, baseUrl, provider]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,8 +63,21 @@ export function Settings() {
 
   return (
     <div className="settings-container">
-      <h2>OpenAI API Settings</h2>
+      <h2>AI API Settings</h2>
       <form onSubmit={handleSubmit}>
+        {/* PROVIDER */}
+        <div className="form-group">
+          <label htmlFor="provider">Provider:</label>
+          <select
+            id="provider"
+            value={provider}
+            onChange={(e) => setProvider(e.target.value as AIProvider)}
+          >
+            <option value="openai">OpenAI</option>
+            <option value="gemini">Google Gemini</option>
+          </select>
+        </div>
+
         {/* API KEY */}
         <div className="form-group">
           <label htmlFor="api-key">API Key:</label>
@@ -73,7 +87,11 @@ export function Settings() {
               id="api-key"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              placeholder="Enter your OpenAI API key"
+              placeholder={
+                provider === "gemini"
+                  ? "Enter your Google AI API key"
+                  : "Enter your OpenAI API key"
+              }
             />
             <button
               type="button"
@@ -85,17 +103,19 @@ export function Settings() {
           </div>
         </div>
 
-        {/* BASE URL */}
-        <div className="form-group">
-          <label htmlFor="base-url">Base URL:</label>
-          <input
-            type="text"
-            id="base-url"
-            value={baseUrl}
-            onChange={(e) => setBaseUrl(e.target.value)}
-            placeholder="https://api.openai.com/v1"
-          />
-        </div>
+        {/* BASE URL - Only show for OpenAI */}
+        {provider === "openai" && (
+          <div className="form-group">
+            <label htmlFor="base-url">Base URL:</label>
+            <input
+              type="text"
+              id="base-url"
+              value={baseUrl}
+              onChange={(e) => setBaseUrl(e.target.value)}
+              placeholder="https://api.openai.com/v1"
+            />
+          </div>
+        )}
 
         {/* MODEL */}
         <div className="form-group">
