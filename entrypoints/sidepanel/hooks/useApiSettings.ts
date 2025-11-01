@@ -35,15 +35,19 @@ export function useApiSettings() {
   useEffect(() => {
     // Only auto-update model if the current model doesn't look like it belongs to the current provider
     // This prevents overwriting user's model selection on every provider change
-    const isOpenAIModel = model.startsWith("gpt") || model.startsWith("o1");
-    const isGeminiModel = model.startsWith("gemini");
+    // Model prefixes as of November 2025
+    const OPENAI_PREFIXES = ["gpt", "o1", "text-", "davinci"];
+    const GEMINI_PREFIXES = ["gemini"];
+    
+    const isOpenAIModel = OPENAI_PREFIXES.some((prefix) => model.startsWith(prefix));
+    const isGeminiModel = GEMINI_PREFIXES.some((prefix) => model.startsWith(prefix));
     
     if (provider === "openai" && isGeminiModel) {
       setModel(getDefaultModel("openai"));
     } else if (provider === "gemini" && isOpenAIModel) {
       setModel(getDefaultModel("gemini"));
     }
-  }, [provider]);
+  }, [provider, model]);
 
   // Load API settings from storage
   const loadSettings = async (): Promise<void> => {

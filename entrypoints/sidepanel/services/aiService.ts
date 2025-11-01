@@ -55,7 +55,7 @@ export class GeminiService implements AIService {
     const model = this.client.getGenerativeModel({ model: params.model });
 
     // Convert messages to Gemini format
-    // Gemini doesn't have a separate system message, so we'll prepend it to the first user message
+    // Gemini doesn't have a separate system role, so we prepend system messages to the user content
     let prompt = "";
     const systemMessages = params.messages.filter((m) => m.role === "system");
     const userMessages = params.messages.filter((m) => m.role === "user");
@@ -74,7 +74,8 @@ export class GeminiService implements AIService {
   }
 
   async listModels(): Promise<string[]> {
-    // Gemini models are predefined
+    // Gemini models are predefined (list updated as of November 2025)
+    // Note: This list may need updates as Google adds or removes models
     // Stable models
     return [
       "gemini-1.5-flash",
