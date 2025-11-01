@@ -279,6 +279,7 @@ export function WebPageSummary({
             fontSize: "14px",
             resize: "vertical",
             fontFamily: "inherit",
+            boxSizing: "border-box",
           }}
         />
         {customPrompt.trim() && (
