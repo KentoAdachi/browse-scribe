@@ -75,10 +75,12 @@ export class GeminiService implements AIService {
 
   async listModels(): Promise<string[]> {
     // Gemini models are predefined
+    // Stable models
     return [
       "gemini-1.5-flash",
       "gemini-1.5-flash-8b",
       "gemini-1.5-pro",
+      // Experimental models (may become unavailable)
       "gemini-2.0-flash-exp",
       "gemini-exp-1206",
     ];
