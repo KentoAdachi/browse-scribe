@@ -1,19 +1,23 @@
 import { useState, useEffect } from "react";
+import { AIProvider } from "../services/aiService";
 
 interface ApiSettings {
   apiKey: string;
   model: string;
   baseUrl: string;
+  provider: AIProvider;
 }
 
 const DEFAULT_MODEL = "gpt-4.1-nano";
 const DEFAULT_BASE_URL = "https://api.openai.com/v1";
+const DEFAULT_PROVIDER: AIProvider = "openai";
 const STORAGE_KEY = "openai_api_settings";
 
 export function useApiSettings() {
   const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [baseUrl, setBaseUrl] = useState(DEFAULT_BASE_URL);
+  const [provider, setProvider] = useState<AIProvider>(DEFAULT_PROVIDER);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
 
@@ -31,6 +35,7 @@ export function useApiSettings() {
         setApiKey(storedSettings.apiKey || "");
         setModel(storedSettings.model || DEFAULT_MODEL);
         setBaseUrl(storedSettings.baseUrl || DEFAULT_BASE_URL);
+        setProvider(storedSettings.provider || DEFAULT_PROVIDER);
       }
     } catch (error) {
       console.error("Error loading API settings:", error);
@@ -46,6 +51,7 @@ export function useApiSettings() {
         apiKey,
         model,
         baseUrl,
+        provider,
       };
 
       await browser.storage.local.set({ [STORAGE_KEY]: settingsData });
@@ -71,6 +77,8 @@ export function useApiSettings() {
     setBaseUrl,
     model,
     setModel,
+    provider,
+    setProvider,
     saveSettings,
     loadSettings,
     isSaving,

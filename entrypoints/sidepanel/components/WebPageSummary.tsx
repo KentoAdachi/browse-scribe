@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import OpenAI from "openai";
 import { useApiSettings } from "../hooks/useApiSettings";
+import { createAIService } from "../services/aiService";
 
 interface WebPageSummaryProps {
   url: string;
@@ -19,14 +19,7 @@ export function WebPageSummary({
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [customPrompt, setCustomPrompt] = useState<string>("");
-  const { apiKey, model, baseUrl } = useApiSettings();
-
-  // Initialize OpenAI client with API key from settings
-  const openai = new OpenAI({
-    apiKey: apiKey || "",
-    baseURL: baseUrl,
-    dangerouslyAllowBrowser: true, // Allow usage in browser environment
-  });
+  const { apiKey, model, baseUrl, provider } = useApiSettings();
 
   useEffect(() => {
     let isCancelled = false;
@@ -137,7 +130,8 @@ export function WebPageSummary({
         return "APIキーが設定されていません。設定画面でAPIキーを設定してください。";
       }
 
-      const response = await openai.chat.completions.create({
+      const aiService = createAIService(provider, apiKey, baseUrl);
+      const result = await aiService.chat({
         model: model || "gpt-4.1-nano",
         messages: [
           {
@@ -152,11 +146,9 @@ export function WebPageSummary({
         ],
       });
 
-      return (
-        response.choices[0]?.message?.content || "要約を生成できませんでした。"
-      );
+      return result || "要約を生成できませんでした。";
     } catch (error) {
-      console.error("OpenAI API error:", error);
+      console.error("AI API error:", error);
       return "要約の生成中にエラーが発生しました。APIキーが正しく設定されているか確認してください。";
     }
   };
@@ -167,7 +159,8 @@ export function WebPageSummary({
         return "APIキーが設定されていません。設定画面でAPIキーを設定してください。";
       }
 
-      const response = await openai.chat.completions.create({
+      const aiService = createAIService(provider, apiKey, baseUrl);
+      const result = await aiService.chat({
         model: model || "gpt-4.1-nano",
         messages: [
           {
@@ -182,11 +175,9 @@ export function WebPageSummary({
         ],
       });
 
-      return (
-        response.choices[0]?.message?.content || "回答を生成できませんでした。"
-      );
+      return result || "回答を生成できませんでした。";
     } catch (error) {
-      console.error("OpenAI API error:", error);
+      console.error("AI API error:", error);
       return "回答の生成中にエラーが発生しました。APIキーが正しく設定されているか確認してください。";
     }
   };
