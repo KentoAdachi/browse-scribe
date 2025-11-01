@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { fetchTranscript } from "youtube-transcript-plus";
 import OpenAI from "openai";
 import { useApiSettings } from "../hooks/useApiSettings";
 
@@ -13,6 +12,36 @@ interface TranscriptItem {
   text: string;
   offset: number;
   duration: number;
+}
+
+// NoteGPT API response types
+interface NoteGptResponse {
+  code: number; // 100000 = success
+  message: string;
+  data: NoteGptData;
+}
+
+interface NoteGptData {
+  videoId: string;
+  videoInfo: {
+    name: string;
+    author: string;
+    duration: string;
+  };
+  language_code: Array<{ code: string; name: string }>;
+  transcripts: Record<string, TranscriptLanguage>;
+}
+
+interface TranscriptLanguage {
+  custom?: TranscriptSegment[];
+  default?: TranscriptSegment[];
+  auto?: TranscriptSegment[];
+}
+
+interface TranscriptSegment {
+  start: string; // "HH:MM:SS" or "MM:SS"
+  end: string;
+  text: string;
 }
 
 export function YoutubeTranscript({
@@ -34,34 +63,96 @@ export function YoutubeTranscript({
     dangerouslyAllowBrowser: true, // Allow usage in browser environment
   });
 
+  // Extract video ID from YouTube URL
+  const extractVideoId = (url: string): string | null => {
+    const regex =
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
+  // Parse timestamp string ("HH:MM:SS" or "MM:SS") to seconds
+  const parseTimestamp = (timestamp: string): number => {
+    const parts = timestamp.split(":").map(Number);
+    if (parts.length === 3) {
+      // HH:MM:SS format
+      return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    }
+    // MM:SS format
+    return parts[0] * 60 + parts[1];
+  };
+
+  // Fetch transcript from NoteGPT API
+  const fetchTranscriptFromApi = async (
+    videoId: string
+  ): Promise<TranscriptItem[]> => {
+    const url = new URL("https://notegpt.io/api/v2/video-transcript");
+    url.searchParams.append("platform", "youtube");
+    url.searchParams.append("video_id", videoId);
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        Cookie: "anonymous_user_id=2500e00db502a74d4fd5d1b754d436fe",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status}`);
+    }
+
+    const data: NoteGptResponse = await response.json();
+
+    // Check if API returned success code
+    if (data.code !== 100000) {
+      throw new Error(`API error: ${data.message}`);
+    }
+
+    // Extract transcripts - priority: default > auto > custom
+    const languageCode = data.data.language_code[0]?.code;
+    if (!languageCode) {
+      throw new Error("No language code found in response");
+    }
+
+    const transcriptLanguage = data.data.transcripts[languageCode];
+    if (!transcriptLanguage) {
+      throw new Error("No transcript found for language code");
+    }
+
+    // Select transcript segments based on priority
+    const segments =
+      transcriptLanguage.default ||
+      transcriptLanguage.auto ||
+      transcriptLanguage.custom;
+
+    if (!segments || segments.length === 0) {
+      throw new Error("No transcript segments found");
+    }
+
+    // Convert NoteGPT format to internal format
+    return segments.map((segment) => {
+      const startSeconds = parseTimestamp(segment.start);
+      const endSeconds = parseTimestamp(segment.end);
+      return {
+        text: segment.text,
+        offset: startSeconds,
+        duration: endSeconds - startSeconds,
+      };
+    });
+  };
+
   useEffect(() => {
     const getTranscript = async () => {
       try {
         setIsLoading(true);
         setError(null);
 
-        // まず日本語のトランスクリプトを試みる
-        try {
-          const result = await fetchTranscript(url, { lang: "ja" });
-          setTranscript(result);
-          return; // 日本語のトランスクリプトが取得できた場合は終了
-        } catch (jaErr) {
-          console.log(
-            "日本語のトランスクリプト取得に失敗しました。英語を試みます:",
-            jaErr
-          );
-
-          // 日本語が失敗した場合、英語のトランスクリプトを試みる
-          try {
-            const result = await fetchTranscript(url, { lang: "en" });
-            setTranscript(result);
-          } catch (enErr) {
-            // 両方の言語が失敗した場合はエラーをスロー
-            throw new Error(
-              "日本語と英語の両方のトランスクリプト取得に失敗しました"
-            );
-          }
+        const videoId = extractVideoId(url);
+        if (!videoId) {
+          throw new Error("Invalid YouTube URL");
         }
+
+        const result = await fetchTranscriptFromApi(videoId);
+        setTranscript(result);
       } catch (err) {
         setError(
           "Failed to load transcript. This video may not have captions available."
