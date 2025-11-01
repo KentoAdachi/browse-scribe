@@ -211,10 +211,11 @@ export function YoutubeTranscript({
         messages: [
           {
             role: "system",
-            content:
-              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。最初に動画全体の概要を簡潔に説明後、各トピックは見出し3（###）で始めてください。\n\n重要な箇所には、YouTubeの該当位置に飛べるリンクを追加してください。トランスクリプトの各行は[MM:SS]または[HH:MM:SS]の形式でタイムスタンプが付いています。リンクは以下の形式で記述してください:\n[MM:SS](https://www.youtube.com/watch?v=" +
-              videoId +
-              "&t=XXXs)\nここでXXXは秒数です（例: [12:34]なら&t=754s）。重要なポイントや話題が変わる箇所に適度にリンクを配置してください。",
+            content: `あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。最初に動画全体の概要を簡潔に説明後、各トピックは見出し3（###）で始めてください。
+
+重要な箇所には、YouTubeの該当位置に飛べるリンクを追加してください。トランスクリプトの各行は[MM:SS]または[HH:MM:SS]の形式でタイムスタンプが付いています。リンクは以下の形式で記述してください:
+[MM:SS](https://www.youtube.com/watch?v=${videoId}&t=XXXs)
+ここでXXXは秒数です（例: [12:34]なら&t=754s）。重要なポイントや話題が変わる箇所に適度にリンクを配置してください。`,
           },
           {
             role: "user",
@@ -239,6 +240,9 @@ export function YoutubeTranscript({
         const videoId = extractVideoId(url);
         if (!videoId) {
           console.error("Failed to extract video ID");
+          const errorMessage =
+            "## YouTube Transcript Summary\n\n動画IDの抽出に失敗しました。URLが正しいか確認してください。\n\n";
+          onAddToNote(errorMessage);
           return;
         }
 
