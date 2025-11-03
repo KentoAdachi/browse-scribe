@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import OpenAI from "openai";
 import { useApiSettings } from "../hooks/useApiSettings";
+import { formatSecondsToTimestamp } from "../utils/formatters";
+import { browser } from "wxt/browser";
 
 interface YoutubeTranscriptProps {
   url: string;
@@ -177,11 +179,48 @@ export function YoutubeTranscript({
     return transcript.map((item) => item.text).join(" ");
   };
 
+  // Handle timestamp click - seek to position in video
+  const handleTimestampClick = async (seconds: number) => {
+    try {
+      const [tab] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+
+      // Check if we're on a YouTube page
+      if (!tab.url?.includes("youtube.com/watch")) {
+        console.warn("[YoutubeTranscript] Not on a YouTube video page");
+        return;
+      }
+
+      if (tab.id) {
+        const response = await browser.tabs.sendMessage(tab.id, {
+          action: "seekVideo",
+          timestamp: seconds,
+        });
+
+        if (response && response.success) {
+          console.log(`[YoutubeTranscript] Successfully seeked to ${seconds}s`);
+        }
+      }
+    } catch (error) {
+      console.error("[YoutubeTranscript] Error seeking video:", error);
+    }
+  };
+
   const summarizeTranscript = async (text: string): Promise<string> => {
     try {
       if (!apiKey) {
         return "APIキーが設定されていません。設定画面でAPIキーを設定してください。";
       }
+
+      // Create transcript with timestamps for AI context
+      const transcriptWithTimestamps = transcript
+        .map((item) => {
+          const timestamp = formatSecondsToTimestamp(item.offset);
+          return `[${timestamp}] ${item.text}`;
+        })
+        .join("\n");
 
       const response = await openai.chat.completions.create({
         model: model || "gpt-4.1-nano",
@@ -189,11 +228,11 @@ export function YoutubeTranscript({
           {
             role: "system",
             content:
-              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。最初に動画全体の概要を簡潔に説明後、各トピックは見出し3（###）で始めてください。",
+              "あなたは要約の専門家です。以下のテキストをMarkdownを用いて簡潔に箇条書き中心で要約してください。原稿は自動生成されたものであるため、不正確な単語は柔軟に読み替え、要約は日本語で行ってください。最初のタイトルは不要です。最初に動画全体の概要を簡潔に説明後、各トピックは見出し3（###）で始めてください。\n\n重要: 各要点には関連するタイムスタンプを [MM:SS](timestamp://秒数) の形式でリンクとして含めてください。例: [2:30](timestamp://150)",
           },
           {
             role: "user",
-            content: `以下のYouTube動画「${title}」のトランスクリプトを要約してください:\n\n${text}`,
+            content: `以下のYouTube動画「${title}」のトランスクリプトを要約してください:\n\n${transcriptWithTimestamps}`,
           },
         ],
       });
@@ -260,11 +299,18 @@ export function YoutubeTranscript({
         }`}
       >
         {isExpanded && transcript.length > 0 ? (
-          <div>
+          <div className="transcript-segments">
             {transcript.map((item, index) => (
-              <span key={index} className="transcript-item">
-                {item.text}{" "}
-              </span>
+              <div key={index} className="transcript-segment">
+                <span
+                  className="timestamp-link"
+                  onClick={() => handleTimestampClick(item.offset)}
+                  title={`Seek to ${formatSecondsToTimestamp(item.offset)}`}
+                >
+                  {formatSecondsToTimestamp(item.offset)}
+                </span>
+                <span className="transcript-text">{item.text}</span>
+              </div>
             ))}
           </div>
         ) : (

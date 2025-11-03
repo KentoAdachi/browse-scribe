@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { formatDate } from "../utils/formatters";
+import { browser } from "wxt/browser";
 
 interface NoteEditorProps {
   note: string;
@@ -58,13 +59,66 @@ export function NoteEditor({
   };
 
   // プレビュー領域クリック時の処理
-  // ⇢ <a> 要素をクリックした場合は編集モードへ入らず
+  // ⇢ <a> 要素やタイムスタンプリンクをクリックした場合は編集モードへ入らず
   //    デフォルトのリンク動作（遷移）を優先する
   const handlePreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).closest("a")) {
+    const target = e.target as HTMLElement;
+    // リンクやクリック可能な要素の場合は編集モードに入らない
+    if (target.closest("a") || target.onclick || target.style.cursor === "pointer") {
       return;
     }
     setIsEditing(true);
+  };
+
+  /* ------------------------------------------------------------------
+     4. タイムスタンプリンクのクリックハンドラー
+        ─ timestamp:// スキームのリンクを検出してYouTube動画をシーク
+  ------------------------------------------------------------------ */
+  const handleTimestampLinkClick = async (href: string) => {
+    console.log("[NoteEditor] Timestamp link clicked:", href);
+    const seconds = parseInt(href.replace("timestamp://", ""), 10);
+    console.log("[NoteEditor] Parsed seconds:", seconds);
+
+    if (!isNaN(seconds)) {
+      try {
+        const [tab] = await browser.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+        console.log("[NoteEditor] Active tab:", tab);
+
+        // Check if we're on a YouTube page
+        if (!tab.url?.includes("youtube.com/watch")) {
+          console.warn("[NoteEditor] Not on a YouTube video page");
+          alert("この機能はYouTube動画ページでのみ動作します");
+          return;
+        }
+
+        if (tab.id) {
+          console.log("[NoteEditor] Sending message to tab:", tab.id);
+          const response = await browser.tabs.sendMessage(tab.id, {
+            action: "seekVideo",
+            timestamp: seconds,
+          });
+          console.log("[NoteEditor] Response from content script:", response);
+
+          if (response && !response.success) {
+            console.error("[NoteEditor] Seek failed:", response.error);
+            alert("動画のシークに失敗しました");
+          }
+        } else {
+          console.error("[NoteEditor] No tab ID found");
+        }
+      } catch (error) {
+        console.error("[NoteEditor] Error seeking video:", error);
+        // Don't show alert for connection errors when not on YouTube
+        if (error instanceof Error && !error.message.includes("Receiving end does not exist")) {
+          alert("動画のシークに失敗しました");
+        }
+      }
+    } else {
+      console.error("[NoteEditor] Invalid timestamp:", href);
+    }
   };
 
   return (
@@ -99,10 +153,56 @@ export function NoteEditor({
         <div className="note-preview" onClick={handlePreviewClick}>
           {note ? (
             <ReactMarkdown
+              urlTransform={(url) => {
+                // Allow timestamp:// scheme to pass through
+                if (url.startsWith("timestamp://")) {
+                  return url;
+                }
+                // Default behavior for other URLs
+                return url;
+              }}
               components={{
-                a: ({ node, ...props }) => (
-                  <a {...props} target="_blank" rel="noopener noreferrer" />
-                ),
+                a: ({ node, href, children, ...props }) => {
+                  console.log("[NoteEditor] Rendering link:", { href, children });
+
+                  // タイムスタンプリンクの処理
+                  if (href?.startsWith("timestamp://")) {
+                    console.log("[NoteEditor] Creating timestamp span for:", href);
+                    return (
+                      <span
+                        onClick={(e) => {
+                          console.log("[NoteEditor] Span clicked");
+                          e.preventDefault();
+                          e.stopPropagation();
+                          e.nativeEvent.stopImmediatePropagation();
+                          handleTimestampLinkClick(href);
+                          return false;
+                        }}
+                        onMouseDown={(e) => {
+                          console.log("[NoteEditor] Span mousedown");
+                          e.preventDefault();
+                        }}
+                        style={{
+                          color: "#4a8fee",
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                          display: "inline",
+                        }}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        {children}
+                      </span>
+                    );
+                  }
+                  // 通常のリンク
+                  console.log("[NoteEditor] Creating regular link for:", href);
+                  return (
+                    <a {...props} href={href} target="_blank" rel="noopener noreferrer">
+                      {children}
+                    </a>
+                  );
+                },
               }}
             >
               {note}

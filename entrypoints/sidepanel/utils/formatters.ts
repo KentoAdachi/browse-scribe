@@ -41,3 +41,21 @@ export const formatDate = (timestamp?: number): string => {
     minute: "2-digit",
   }).format(date);
 };
+
+/**
+ * Format seconds to MM:SS or HH:MM:SS format for video timestamps
+ * @param seconds - The timestamp in seconds
+ * @returns Formatted timestamp string
+ */
+export const formatSecondsToTimestamp = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, "0")}:${remainingSeconds
+      .toString()
+      .padStart(2, "0")}`;
+  }
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+};

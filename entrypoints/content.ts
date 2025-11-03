@@ -68,6 +68,27 @@ export default defineContentScript({
         handleRequest();
         return true; // Keep the message channel open for async response
       }
+
+      if (message.action === "seekVideo") {
+        const handleSeek = async () => {
+          try {
+            const timestamp = message.timestamp;
+            if (typeof timestamp !== "number") {
+              sendResponse({ success: false, error: "Invalid timestamp" });
+              return;
+            }
+
+            const success = await seekYouTubeVideo(timestamp);
+            sendResponse({ success });
+          } catch (error) {
+            console.error("Error seeking video:", error);
+            sendResponse({ success: false, error: String(error) });
+          }
+        };
+
+        handleSeek();
+        return true; // Keep the message channel open for async response
+      }
     });
 
     // Reset readiness on page navigation
@@ -188,4 +209,50 @@ function extractPageContent(): string {
   }
 
   return textContent;
+}
+
+/**
+ * Seek YouTube video to a specific timestamp
+ * @param seconds - The timestamp in seconds to seek to
+ * @returns Promise<boolean> - Whether the seek was successful
+ */
+async function seekYouTubeVideo(seconds: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    let retries = 3;
+
+    const attemptSeek = () => {
+      // Try to find the video element
+      const video = document.querySelector<HTMLVideoElement>('video.html5-main-video') ||
+                    document.querySelector<HTMLVideoElement>('video');
+
+      if (video && video.readyState >= 2) {
+        // Video is ready (HAVE_CURRENT_DATA or higher)
+        try {
+          video.currentTime = seconds;
+
+          // Try to play if paused
+          if (video.paused) {
+            video.play().catch((error) => {
+              console.warn("Could not auto-play video:", error);
+            });
+          }
+
+          console.log(`Successfully seeked video to ${seconds} seconds`);
+          resolve(true);
+        } catch (error) {
+          console.error("Error setting currentTime:", error);
+          resolve(false);
+        }
+      } else if (retries > 0) {
+        // Retry after a short delay
+        retries--;
+        setTimeout(attemptSeek, 500);
+      } else {
+        console.error("Video element not found or not ready after retries");
+        resolve(false);
+      }
+    };
+
+    attemptSeek();
+  });
 }
