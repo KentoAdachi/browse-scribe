@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { formatDate } from "../utils/formatters";
 import { browser } from "wxt/browser";
+import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis";
 
 interface NoteEditorProps {
   note: string;
@@ -23,6 +24,9 @@ export function NoteEditor({
   const [draft, setDraft] = useState(note);
   /** IME 変換中かどうか */
   const isComposing = useRef(false);
+  /** Text-to-speech hook */
+  const { isSpeaking, isPaused, speak, pause, resume, stop, isSupported } =
+    useSpeechSynthesis();
 
   /* ------------------------------------------------------------------
      1. 親から渡される note が変わったら draft を同期
@@ -121,10 +125,54 @@ export function NoteEditor({
     }
   };
 
+  const handleSpeakNote = () => {
+    if (isSpeaking) {
+      if (isPaused) {
+        resume();
+      } else {
+        pause();
+      }
+    } else {
+      speak(note);
+    }
+  };
+
+  const handleStopSpeaking = () => {
+    stop();
+  };
+
   return (
     <>
-      <div className="last-updated-info">
-        最終更新日: {formatDate(lastUpdated)}
+      <div className="editor-header">
+        <div className="last-updated-info">
+          最終更新日: {formatDate(lastUpdated)}
+        </div>
+        {isSupported && note && !isEditing && (
+          <div className="tts-controls">
+            <button
+              onClick={handleSpeakNote}
+              className="tts-button"
+              title={
+                isSpeaking
+                  ? isPaused
+                    ? "再生"
+                    : "一時停止"
+                  : "音声読み上げ"
+              }
+            >
+              {isSpeaking ? (isPaused ? "▶️" : "⏸️") : "🔊"}
+            </button>
+            {isSpeaking && (
+              <button
+                onClick={handleStopSpeaking}
+                className="tts-button tts-stop"
+                title="停止"
+              >
+                ⏹️
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {isEditing ? (

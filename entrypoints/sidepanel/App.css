@@ -308,6 +308,54 @@ body, html {
   font-style: italic;
 }
 
+/* Editor header with TTS controls */
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.tts-controls {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.tts-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tts-button:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
+
+.tts-button:active {
+  transform: scale(0.95);
+}
+
+@media (prefers-color-scheme: dark) {
+  .tts-button {
+    background-color: #4a4a4a;
+    border-color: #666;
+  }
+  
+  .tts-button:hover {
+    background-color: #5a5a5a;
+  }
+}
+
 .note-item-date {
   font-size: 0.7rem;
   color: #666;
