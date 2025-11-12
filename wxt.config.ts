@@ -8,6 +8,7 @@ export default defineConfig({
     description: "Save markdown notes per URL in your browser's side panel",
     action: {},
     permissions: ["storage", "tabs", "sidePanel"],
+    host_permissions: ["https://notegpt.io/*"],
     side_panel: {
       default_path: "sidepanel/index.html",
     },
