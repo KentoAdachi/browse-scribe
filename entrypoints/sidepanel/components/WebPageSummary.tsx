@@ -223,23 +223,23 @@ export function WebPageSummary({
   };
 
   if (isLoading) {
-    return <div className="transcript-loading">Loading page content...</div>;
+    return <div className="summary-loading">Loading page content...</div>;
   }
 
   if (error) {
-    return <div className="transcript-error">{error}</div>;
+    return <div className="summary-error">{error}</div>;
   }
 
   const isCustomPrompt = customPrompt.trim().length > 0;
 
   return (
-    <div className="youtube-transcript">
-      <div className="transcript-header">
-        <div className="transcript-title">
+    <div className="webpage-summary">
+      <div className="summary-header">
+        <div className="summary-title">
           <h3>Web Page Content</h3>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="toggle-transcript-button"
+            className="toggle-summary-button"
             aria-expanded={isExpanded}
           >
             {isExpanded ? "折畳" : "展開"}
@@ -247,7 +247,7 @@ export function WebPageSummary({
         </div>
         <button
           onClick={handleAddToNote}
-          className="add-transcript-button"
+          className="add-summary-button"
           disabled={isSummarizing || !apiKey}
           title={!apiKey ? "APIキーが設定されていません" : ""}
         >
@@ -290,13 +290,13 @@ export function WebPageSummary({
       </div>
 
       <div
-        className={`transcript-content ${
+        className={`summary-content ${
           isExpanded ? "expanded" : "collapsed"
         }`}
       >
         {isExpanded && content ? (
           <div>
-            <div className="transcript-item">
+            <div className="summary-item">
               {content.substring(0, 1000)}
               {content.length > 1000 && "..."}
             </div>

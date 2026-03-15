@@ -4,7 +4,6 @@ import { useNotes } from "./hooks/useNotes";
 import { useTabs } from "./hooks/useTabs";
 import { NoteEditor } from "./components/NoteEditor";
 import { NotesList } from "./components/NotesList";
-import { YoutubeTranscript } from "./components/YoutubeTranscript";
 import { WebPageSummary } from "./components/WebPageSummary";
 import { Settings } from "./components/Settings/Settings";
 
@@ -35,34 +34,16 @@ function App() {
   // Initialize tabs hook with URL change callback
   const { currentUrl, currentTitle, navigateToUrl } = useTabs(handleUrlChange);
 
-  // Check if current URL is a YouTube video
-  const isYoutubeUrl = useMemo(() => {
-    if (!currentUrl) return false;
-
-    try {
-      const url = new URL(currentUrl);
-      return (
-        (url.hostname === "www.youtube.com" ||
-          url.hostname === "youtube.com" ||
-          url.hostname === "youtu.be") &&
-        (url.pathname.includes("/watch") ||
-          url.pathname.includes("/shorts/") ||
-          url.hostname === "youtu.be")
-      );
-    } catch (e) {
-      return false;
-    }
-  }, [currentUrl]);
 
   // Handle note changes
   const handleNoteChange = (content: string): void => {
     saveNote(currentUrl, content, currentTitle);
   };
 
-  // Handle adding transcript to note
-  const handleAddTranscriptToNote = (transcript: string): void => {
-    // Combine existing note with transcript
-    const updatedNote = note ? `${note}\n\n${transcript}` : transcript;
+  // Handle adding summary to note
+  const handleAddSummaryToNote = (summary: string): void => {
+    // Combine existing note with summary
+    const updatedNote = note ? `${note}\n\n${summary}` : summary;
     handleNoteChange(updatedNote);
   };
 
@@ -123,19 +104,11 @@ function App() {
         />
       ) : (
         <>
-          {isYoutubeUrl ? (
-            <YoutubeTranscript
-              url={currentUrl}
-              title={currentTitle}
-              onAddToNote={handleAddTranscriptToNote}
-            />
-          ) : (
-            <WebPageSummary
-              url={currentUrl}
-              title={currentTitle}
-              onAddToNote={handleAddTranscriptToNote}
-            />
-          )}
+          <WebPageSummary
+            url={currentUrl}
+            title={currentTitle}
+            onAddToNote={handleAddSummaryToNote}
+          />
           <NoteEditor
             note={note}
             lastUpdated={lastUpdated}

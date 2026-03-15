@@ -4,7 +4,7 @@
 
 
 ブラウザのサイドパネルに **ページ URL ごとに Markdown メモ** を保存できる、Chrome / Firefox (Manifest V3) 拡張機能です。  
-YouTube 動画を開くと自動で字幕情報を取得し、ワンクリックで要約をメモに貼り付けることができます。  
+
 キーボードショートカット **`Alt+M`**（デフォルト）でサイドパネルをすばやく開閉できます。
 
 スクリーンショット
@@ -26,8 +26,7 @@ YouTube 動画を開くと自動で字幕情報を取得し、ワンクリック
 | ページ別メモ保存 | URL をキーに自動でメモをひも付け。ページを再訪するとサイドパネルにメモを表示。 |
 | Markdown サポート | フォーカス時はプレーンテキスト、フォーカスを外すとリアルタイムプレビュー。 |
 | メモ一覧 | すべての保存メモを一覧表示。クリックで対象ページにジャンプ、ゴミ箱アイコンで削除。 |
-| YouTube 字幕取得 | `youtube-transcript-plus` でキャプション取得（日本語優先）。 |
-| GPT で要約 | OpenAI API キーとモデルを設定すると、動画キャプションを日本語 Markdown で要約しメモに追加。 |
+| GPT で要約 | OpenAI API キーとモデルを設定すると、Webページを日本語 Markdown で要約しメモに追加。 |
 
 ---
 
@@ -63,7 +62,7 @@ entrypoints/
      ├─ hooks/              # React hooks（メモ管理・タブ追跡・API設定）
      ├─ components/         # UI コンポーネント
      │   ├─ NoteEditor.tsx  # Markdown エディタ
-     │   ├─ YoutubeTranscript.tsx  # トランスクリプト取得＆要約
+
      │   └─ Settings/       # 設定ダイアログ
      └─ App.tsx             # ルートコンポーネント
 wxt.config.ts               # WXT ビルド&ランナー設定
@@ -75,7 +74,7 @@ wxt.config.ts               # WXT ビルド&ランナー設定
 
 - [React 19](https://react.dev/)
 - [WXT](https://wxt.dev/) – Manifest V3 向けビルドツール
-- [youtube-transcript-plus](https://www.npmjs.com/package/youtube-transcript-plus)
+
 - [OpenAI JS SDK](https://github.com/openai/openai-node)
 
 ---

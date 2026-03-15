@@ -419,15 +419,15 @@ body, html {
   }
 }
 
-/* YouTube Transcript Component Styles */
-.youtube-transcript {
+/* WebPage Summary Component Styles */
+.webpage-summary {
   margin-bottom: 1rem;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
 }
 
-.transcript-header {
+.summary-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -436,39 +436,39 @@ body, html {
   border-bottom: 1px solid #e0e0e0;
 }
 
-.transcript-title {
+.summary-title {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.transcript-title h3 {
+.summary-title h3 {
   margin: 0;
   font-size: 1rem;
 }
 
-.transcript-content {
+.summary-content {
   padding: 0.5rem 1rem;
   transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
   overflow-y: auto;
 }
 
-.transcript-content.collapsed {
+.summary-content.collapsed {
   max-height: 50px;
   overflow: hidden;
   opacity: 0.8;
 }
 
-.transcript-content.expanded {
+.summary-content.expanded {
   max-height: 300px;
 }
 
-.transcript-item {
+.summary-item {
   font-size: 0.9rem;
   line-height: 1.4;
 }
 
-.toggle-transcript-button {
+.toggle-summary-button {
   padding: 0.25rem 0.5rem;
   background-color: #f0f0f0;
   border: 1px solid #ccc;
@@ -478,11 +478,11 @@ body, html {
   transition: background-color 0.2s;
 }
 
-.toggle-transcript-button:hover {
+.toggle-summary-button:hover {
   background-color: #e0e0e0;
 }
 
-.add-transcript-button {
+.add-summary-button {
   padding: 0.25rem 0.5rem;
   background-color: #4a8fee;
   color: white;
@@ -493,125 +493,77 @@ body, html {
   transition: background-color 0.2s;
 }
 
-.add-transcript-button:hover:not(:disabled) {
+.add-summary-button:hover:not(:disabled) {
   background-color: #3a7fde;
 }
 
-.add-transcript-button:disabled {
+.add-summary-button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
 
-.transcript-loading, .transcript-error {
+.summary-loading, .summary-error {
   padding: 1rem;
   text-align: center;
   color: #666;
 }
 
-.transcript-error {
+.summary-error {
   color: #d32f2f;
 }
 
-/* Dark mode support for transcript component */
+/* Dark mode support for summary component */
 @media (prefers-color-scheme: dark) {
-  .youtube-transcript {
+  .webpage-summary {
     border-color: #444;
   }
   
-  .transcript-header {
+  .summary-header {
     background-color: #333;
     border-bottom-color: #444;
   }
   
-  .transcript-title h3 {
+  .summary-title h3 {
     color: #e0e0e0;
   }
   
-  .toggle-transcript-button {
+  .toggle-summary-button {
     background-color: #4a4a4a;
     color: #e0e0e0;
     border-color: #666;
   }
   
-  .toggle-transcript-button:hover {
+  .toggle-summary-button:hover {
     background-color: #5a5a5a;
   }
   
-  .add-transcript-button {
+  .add-summary-button {
     background-color: #4a8fee;
   }
   
-  .add-transcript-button:hover:not(:disabled) {
+  .add-summary-button:hover:not(:disabled) {
     background-color: #3a7fde;
   }
   
-  .add-transcript-button:disabled {
+  .add-summary-button:disabled {
     background-color: #555;
   }
   
-  .transcript-loading {
+  .summary-loading {
     color: #aaa;
   }
   
-  .transcript-error {
+  .summary-error {
     color: #ff6b6b;
   }
   
-  .transcript-item {
+  .summary-item {
     color: #e0e0e0;
   }
   
-  .transcript-content.collapsed {
+  .summary-content.collapsed {
     opacity: 0.7;
   }
 }
 
-/* Timestamp link styles for clickable timestamps */
-.transcript-segments {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
 
-.transcript-segment {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
-}
-
-.timestamp-link {
-  color: #4a8fee;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 0.85rem;
-  min-width: 50px;
-  flex-shrink: 0;
-  user-select: none;
-  transition: color 0.2s;
-}
-
-.timestamp-link:hover {
-  color: #3a7fde;
-  text-decoration: underline;
-}
-
-.transcript-text {
-  flex: 1;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-/* Dark mode support for timestamp links */
-@media (prefers-color-scheme: dark) {
-  .timestamp-link {
-    color: #6ba3ff;
-  }
-
-  .timestamp-link:hover {
-    color: #8bb9ff;
-  }
-
-  .transcript-text {
-    color: #e0e0e0;
-  }
-}
