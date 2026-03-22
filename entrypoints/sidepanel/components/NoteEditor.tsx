@@ -62,8 +62,9 @@ export function NoteEditor({
   //    デフォルトのリンク動作（遷移）を優先する
   const handlePreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    // リンクやクリック可能な要素の場合は編集モードに入らない
-    if (target.closest("a") || target.onclick || target.style.cursor === "pointer") {
+    // リンクやボタンなどのインタラクティブ要素の場合は編集モードに入らない
+    const interactiveSelector = "a, button, input, select, textarea";
+    if (target.closest(interactiveSelector) || target.isContentEditable) {
       return;
     }
     setIsEditing(true);
