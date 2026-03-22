@@ -1,0 +1,45 @@
+{
+  "app": {
+    "name": "BrowseScribe",
+    "description": "Save markdown notes per URL in your browser's side panel"
+  },
+  "buttons": {
+    "settings": "Settings",
+    "back": "Back",
+    "allNotes": "All Notes",
+    "currentNote": "Current Note",
+    "addToNote": "Add to Note",
+    "expand": "Expand",
+    "collapse": "Collapse"
+  },
+  "youtube": {
+    "transcript": "YouTube Transcript",
+    "summary": "YouTube Transcript Summary",
+    "loading": "Loading transcript...",
+    "noTranscript": "No transcript available for this video.",
+    "addToNote": "Add to Note"
+  },
+  "webPage": {
+    "summary": "Web Page Summary",
+    "analysis": "Web Page Analysis",
+    "loading": "Loading page content...",
+    "noContent": "No content available for this page.",
+    "questionMode": "Question mode: Ask questions about this page content",
+    "customPrompt": "Custom prompt for analysis"
+  },
+  "settings": {
+    "title": "Settings",
+    "apiKey": "API Key",
+    "baseUrl": "Base URL",
+    "model": "Model",
+    "save": "Save",
+    "apiKeyPlaceholder": "Enter your OpenAI API key",
+    "modelPlaceholder": "e.g., gpt-4.1-nano"
+  },
+  "notes": {
+    "lastUpdated": "Last updated",
+    "noUpdateRecord": "No update record",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this note?"
+  }
+}
